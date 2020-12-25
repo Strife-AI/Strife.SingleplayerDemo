@@ -1,0 +1,30 @@
+{
+    "projectName": "SingleplayerDemo",
+    "resourceDirectory": "assets",
+    "resources": [
+        {
+            "type": "spritefont",
+            "name": "console-font",
+            "data": {
+                "spritePath": "Sprites/Spritesheets/font.png",
+                "rows": 16,
+                "cols": 16
+            }
+        },
+        {
+            "type": "tilemap",
+            "name": "isengard",
+            "path": "Tilemaps/Isengard.tmx"
+        },
+        {
+            "type": "tilemap",
+            "name": "erebor",
+            "path": "Tilemaps/Erebor.tmx"
+        },
+        {
+            "type": "sprite",
+            "name": "castle",
+            "path": "Sprites/castle.png"
+        }
+    ]
+}
