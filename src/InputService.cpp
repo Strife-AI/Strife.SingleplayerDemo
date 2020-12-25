@@ -23,57 +23,9 @@ InputButton g_downButton(SDL_SCANCODE_S);
 InputButton g_leftButton(SDL_SCANCODE_A);
 InputButton g_rightButton(SDL_SCANCODE_D);
 
-DEFINE_COMMAND(MoveToCommand)
-{
-    void DoSerialize(ReadWriteBitStream& stream) override
-    {
-        stream.Add(position).Add(netId);
-    }
-
-    Vector2 position;
-    uint32_t netId;
-};
-
-DEFINE_COMMAND(AttackCommand)
-{
-    void DoSerialize(ReadWriteBitStream& stream) override
-    {
-        stream.Add(netId).Add(attackNetId);
-    }
-
-    uint32_t netId;
-    uint32_t attackNetId;
-};
-
 void InputService::OnAdded()
 {
-    auto& handler = scene->replicationManager->playerCommandHandler;
-    ReplicationManager* replicationManager = scene->replicationManager;
 
-    handler.RegisterCommandType<MoveToCommand>(1, [=](const MoveToCommand& command)
-    {
-        auto entity = replicationManager->GetEntityByNetId(command.netId);
-        PlayerEntity* player;
-        if (entity != nullptr && entity->Is(player))
-        {
-            player->MoveTo(command.position);
-        }
-    });
-
-    handler.RegisterCommandType<AttackCommand>(2, [=](const AttackCommand& command)
-    {
-        auto entity = replicationManager->GetEntityByNetId(command.netId);
-        PlayerEntity* player;
-        if (entity != nullptr && entity->Is(player))
-        {
-            auto attack = replicationManager->GetEntityByNetId(command.attackNetId);
-
-            if (attack != nullptr)
-            {
-                player->Attack(attack);
-            }
-        }
-    });
 }
 
 
@@ -81,44 +33,25 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
 {
     if (ev.Is<SceneLoadedEvent>())
     {
-        if (scene->isServer)
-        {
-            for (auto spawn : scene->GetEntitiesOfType<CastleEntity>())
-            {
-                spawnPositions.push_back(spawn->Center());
-                spawn->Destroy();
-            }
+        spawnPositions.push_back({ 1000, 1000 });
 
-            spawnPositions.push_back({ 1000, 1000 });
+        auto spawnPoint = spawnPositions[spawnPositions.size() - 1];
+        spawnPositions.pop_back();
+
+        auto spawn = scene->CreateEntity<CastleEntity>(spawnPoint);
+        spawn->playerId = 0;
+
+        for (int i = 0; i < 4; ++i)
+        {
+            spawn->SpawnPlayer();
         }
+
+        spawns.push_back(spawn);
+
+        scene->GetCameraFollower()->FollowMouse();
     }
     if (ev.Is<UpdateEvent>())
     {
-        if (scene->isServer && !gameOver)
-        {
-            bool multipleClientsConnected = scene->GetEngine()->GetServerGame()->TotalConnectedClients() >= 2;
-
-            if (multipleClientsConnected)
-            {
-                auto spawnsLeft = scene->GetEntitiesOfType<CastleEntity>();
-
-                if (spawnsLeft.size() == 0)
-                {
-                    scene->SendEvent(BroadcastToClientMessage("Draw!"));
-                    gameOver = true;
-                }
-                else
-                {
-                    if (spawnsLeft.size() == 1)
-                    {
-                        gameOver = true;
-                        auto& name = scene->replicationManager->GetClient(players[0]->net->ownerClientId).clientName;
-                        scene->SendEvent(BroadcastToClientMessage(name + " wins!"));
-                    }
-                }
-            }
-        }
-
         HandleInput();
     }
     else if (auto renderEvent = ev.Is<RenderEvent>())
@@ -133,19 +66,7 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
     {
         if (scene->isServer)
         {
-            auto spawnPoint = spawnPositions[spawnPositions.size() - 1];
-            spawnPositions.pop_back();
 
-            auto spawn = scene->CreateEntity<CastleEntity>(spawnPoint);
-
-            spawn->net->ownerClientId = connectedEvent->id;
-
-            for (int i = 0; i < 4; ++i)
-            {
-                spawn->SpawnPlayer();
-            }
-
-            spawns.push_back(spawn);
         }
     }
 }
@@ -171,16 +92,16 @@ void InputService::HandleInput()
             for (auto player : players)
             {
                 if (player->Bounds().ContainsPoint(scene->GetCamera()->ScreenToWorld(mouse->MousePosition()))
-                    && player->net->ownerClientId == scene->replicationManager->localClientId)
+                    && player->playerId == 0)
                 {
                     PlayerEntity* oldPlayer;
                     if (activePlayer.TryGetValue(oldPlayer))
                     {
-                        oldPlayer->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::Deciding;
+                        //oldPlayer->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::Deciding;
                     }
 
                     activePlayer = player;
-                    player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::CollectingSamples;
+                    //player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::CollectingSamples;
 
                     break;
                 }
@@ -209,27 +130,11 @@ void InputService::HandleInput()
 
                     if (entity->Bounds().ContainsPoint(scene->GetCamera()->ScreenToWorld(mouse->MousePosition())))
                     {
-                        AttackCommand command;
-                        command.netId = self->net->netId;
-                        command.attackNetId = netComponent->netId;
-                        scene->replicationManager->playerCommandHandler.AddCommand(command);
 
-                        attack = true;
-                        break;
                     }
-                }
-
-                if (!attack)
-                {
-                    MoveToCommand command;
-                    command.position = scene->GetCamera()->ScreenToWorld(mouse->MousePosition());
-                    command.netId = self->net->netId;
-                    scene->replicationManager->playerCommandHandler.AddCommand(command);
                 }
             }
         }
-
-        scene->replicationManager->Client_SendUpdateRequest(scene->deltaTime, scene->GetEngine()->GetClientGame());
     }
 }
 

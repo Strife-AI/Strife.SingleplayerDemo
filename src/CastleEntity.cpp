@@ -24,8 +24,6 @@ void CastleEntity::OnAdded()
 
     rigidBody->CreateBoxCollider({ 600, 600 }, true);
 
-    net = AddComponent<NetComponent>();
-
     auto health = AddComponent<HealthBarComponent>();
     health->offsetFromCenter = -size.YVector() / 2 - Vector2(0, 5);
     health->maxHealth = 1000;
@@ -46,14 +44,9 @@ void CastleEntity::OnAdded()
 
 void CastleEntity::Update(float deltaTime)
 {
-    if (net == nullptr)
-    {
-        return;
-    }
-
-    _light->color = scene->replicationManager->localClientId == net->ownerClientId
-                    ? Color::Green()
-                    : Color::White();
+    _light->color = playerId == 0
+        ? Color::Green()
+        : Color::White();
 }
 
 void CastleEntity::ReceiveServerEvent(const IEntityEvent& ev)
@@ -70,23 +63,17 @@ void CastleEntity::SpawnPlayer()
     _nextSpawnSlotId = (_nextSpawnSlotId + 1) % 4;
 
     auto player = scene->CreateEntity<PlayerEntity>({ position });
-    player->GetComponent<NetComponent>()->ownerClientId = net->ownerClientId;
+    player->playerId = playerId;
 }
 
 void CastleEntity::OnDestroyed()
 {
-    if (scene->isServer && net != nullptr && net->ownerClientId >= 0)
+    for (auto player : scene->GetEntitiesOfType<PlayerEntity>())
     {
-        for (auto player : scene->GetEntitiesOfType<PlayerEntity>())
+        if (player->playerId == playerId)
         {
-            if (player->net->ownerClientId == net->ownerClientId)
-            {
-                player->Destroy();
-            }
+            player->Destroy();
         }
-
-        auto& selfName = scene->replicationManager->GetClient(net->ownerClientId).clientName;
-        scene->SendEvent(BroadcastToClientMessage(selfName + " has been eliminated!"));
     }
 
     scene->GetService<PathFinderService>()->RemoveObstacle(Bounds());
@@ -94,12 +81,5 @@ void CastleEntity::OnDestroyed()
 
 void CastleEntity::ReceiveEvent(const IEntityEvent& ev)
 {
-    if (ev.Is<SpawnedOnClientEvent>())
-    {
-        if (net->ownerClientId == scene->replicationManager->localClientId)
-        {
-            scene->GetCameraFollower()->FollowMouse();
-            scene->GetCameraFollower()->CenterOn(Center());
-        }
-    }
+
 }

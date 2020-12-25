@@ -22,4 +22,5 @@ DEFINE_ENTITY(FireballEntity, "fireball")
     PointLight light;
     int ownerId;
     Vector2 velocity;
+    int playerId;
 };

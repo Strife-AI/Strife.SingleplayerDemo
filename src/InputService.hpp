@@ -18,7 +18,5 @@ struct InputService : ISceneService
     std::vector<CastleEntity*> spawns;
     std::vector<Vector2> spawnPositions;
 
-    float sendUpdateTimer = 0;
-
     bool gameOver = false;
 };

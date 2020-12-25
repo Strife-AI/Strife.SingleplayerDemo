@@ -16,7 +16,7 @@ DEFINE_ENTITY(CastleEntity, "castle")
     void ReceiveServerEvent(const IEntityEvent& ev) override;
     void ReceiveEvent(const IEntityEvent& ev) override;
 
-    NetComponent* net;
+    int playerId;
 
 private:
     float _colorChangeTime = 0;

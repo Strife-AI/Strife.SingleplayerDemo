@@ -8,20 +8,18 @@ void FireballEntity::OnAdded()
     auto rb = AddComponent<RigidBodyComponent>(b2_dynamicBody);
     rb->CreateCircleCollider(Radius, true);
 
-    AddComponent<NetComponent>();
-
     light.color = Color::Orange();
     light.maxDistance = Radius;
     light.intensity = 2;
 
-    if (!scene->isServer) scene->GetLightManager()->AddLight(&light);
+    scene->GetLightManager()->AddLight(&light);
 
     rb->SetVelocity(velocity);
 }
 
 void FireballEntity::OnDestroyed()
 {
-    if (!scene->isServer) scene->GetLightManager()->RemoveLight(&light);
+    scene->GetLightManager()->RemoveLight(&light);
 }
 
 void FireballEntity::ReceiveServerEvent(const IEntityEvent& ev)

@@ -48,14 +48,7 @@ struct Game : IGame
         auto map = "erebor"_sid;
         auto engine = GetEngine();
 
-        if(!g_isServer.Value())
-        {
-            engine->StartLocalServer(g_serverPort.Value(), map);
-        }
-        else
-        {
-            engine->StartServer(g_serverPort.Value(), map);
-        }
+        engine->StartSinglePlayerGame(map);
 
         auto neuralNetworkManager = engine->GetNeuralNetworkManager();
 
@@ -64,7 +57,7 @@ struct Game : IGame
             auto playerDecider = neuralNetworkManager->CreateDecider<PlayerDecider>();
             auto playerTrainer = neuralNetworkManager->CreateTrainer<PlayerTrainer>();
 
-            neuralNetworkManager->CreateNetwork("nn", playerDecider, playerTrainer);
+            //neuralNetworkManager->CreateNetwork("nn", playerDecider, playerTrainer);
         }
 
         // Add types of objects the sensors can pick up
@@ -79,27 +72,6 @@ struct Game : IGame
 
     std::string initialConsoleCmd;
 };
-
-void UploadToServer(ConsoleCommandBinder& binder)
-{
-    std::string fileName;
-    binder
-        .Bind(fileName, "fileName")
-        .Help("Uploads a file to the server");
-
-    auto client = binder.GetEngine()->GetClientGame();
-
-    if (client != nullptr)
-    {
-        bool successfullyStarted = client->fileTransferService.TryUploadFile(fileName, client->serverAddress);
-        if (!successfullyStarted)
-        {
-            Log("Failed to initiate file transfer for file %s\n", fileName.c_str());
-        }
-    }
-}
-
-ConsoleCmd g_upload("upload", UploadToServer);
 
 int main(int argc, char* argv[])
 {

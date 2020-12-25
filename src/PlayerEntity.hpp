@@ -8,30 +8,6 @@
 #include "Scene/IEntityEvent.hpp"
 #include "HealthBarComponent.hpp"
 
-struct PlayerEntity;
-
-DEFINE_EVENT(PlayerAddedToGame)
-{
-    PlayerAddedToGame(PlayerEntity* player_)
-        : player(player_)
-    {
-
-    }
-
-    PlayerEntity* player;
-};
-
-DEFINE_EVENT(PlayerRemovedFromGame)
-{
-    PlayerRemovedFromGame(PlayerEntity* player_)
-        : player(player_)
-    {
-
-    }
-
-    PlayerEntity* player;
-};
-
 enum class PlayerState
 {
     None,
@@ -55,12 +31,12 @@ DEFINE_ENTITY(PlayerEntity, "player")
 
     RigidBodyComponent* rigidBody;
     PathFollowerComponent* pathFollower;
-    NetComponent* net;
     HealthBarComponent* health;
 
     EntityReference<Entity> attackTarget;
     PlayerState state = PlayerState::None;
     float attackCoolDown = 0;
+    int playerId;
 
     void Die(const OutOfHealthEvent* outOfHealth);
 };

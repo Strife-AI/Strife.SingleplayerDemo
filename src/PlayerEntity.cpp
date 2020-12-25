@@ -32,16 +32,13 @@ void PlayerEntity::OnAdded()
     box->SetDensity(1);
     box->SetFriction(0);
 
-    net = AddComponent<NetComponent>();
-
-    scene->SendEvent(PlayerAddedToGame(this));
-
     scene->GetService<InputService>()->players.push_back(this);
 
     // Setup network and sensors
+#if false
     {
         auto nn = AddComponent<NeuralNetworkComponent<PlayerNetwork>>();
-        nn->SetNetwork("nn");
+        //nn->SetNetwork("nn");
 
         // Network only runs on server
         if (scene->isServer) nn->mode = NeuralNetworkMode::Deciding;
@@ -69,6 +66,7 @@ void PlayerEntity::OnAdded()
             outDecision.action = PlayerAction::Down;
         };
     }
+#endif
 }
 
 void PlayerEntity::ReceiveServerEvent(const IEntityEvent& ev)
@@ -85,20 +83,19 @@ void PlayerEntity::Die(const OutOfHealthEvent* outOfHealth)
 
     auto& selfName = scene->replicationManager->GetClient(
         outOfHealth->killer->GetComponent<NetComponent>()->ownerClientId).clientName;
-    auto& otherName = scene->replicationManager->GetClient(net->ownerClientId).clientName;
+    auto& otherName = scene->replicationManager->GetClient(playerId).clientName;
 
     scene->SendEvent(BroadcastToClientMessage(selfName + " killed " + otherName + "'s bot!"));
 
     for (auto spawn : scene->GetService<InputService>()->spawns)
     {
-        if (spawn->net->ownerClientId == net->ownerClientId)
+        if (spawn->playerId == playerId)
         {
             auto server = GetEngine()->GetServerGame();
 
             spawn->StartTimer(10, [=]
             {
                 spawn->SpawnPlayer();
-                server->ExecuteRpc(spawn->net->ownerClientId, MessageHudRpc("Your bot has respawned at your base"));
             });
 
             break;
@@ -125,19 +122,8 @@ void PlayerEntity::Render(Renderer* renderer)
             Color::Yellow()
         };
 
-        auto color = c[net->ownerClientId];
+        auto color = c[playerId];
         renderer->RenderRectangle(Rectangle(position - Dimensions() / 2, Dimensions()), color, -0.99);
-    }
-
-    // Render name
-    {
-        FontSettings font;
-        font.spriteFont = ResourceManager::GetResource<SpriteFont>("console-font"_sid);
-        font.scale = 0.75;
-
-        auto& name = scene->replicationManager->GetClient(net->ownerClientId).clientName;
-        Vector2 size = font.spriteFont->MeasureStringWithNewlines(name.c_str(), 0.75).AsVectorOfType<float>();
-        renderer->RenderString(font, name.c_str(), Center() - Vector2(0, 32) - size / 2, -1);
     }
 }
 
@@ -163,7 +149,7 @@ void PlayerEntity::ServerFixedUpdate(float deltaTime)
                 if (attackCoolDown <= 0)
                 {
                     auto fireball = scene->CreateEntity<FireballEntity>(Center(), dir * 400);
-                    fireball->GetComponent<NetComponent>()->ownerClientId = net->ownerClientId;
+                    fireball->playerId = playerId;
                     fireball->ownerId = id;
 
                     attackCoolDown = 1;
