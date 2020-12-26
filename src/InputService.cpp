@@ -23,11 +23,55 @@ InputButton g_downButton(SDL_SCANCODE_S);
 InputButton g_leftButton(SDL_SCANCODE_A);
 InputButton g_rightButton(SDL_SCANCODE_D);
 
+Vector2 MoveDirectionToVector2(MoveDirection direction)
+{
+    const float halfSqrt2 = sqrt(2) / 2;
+
+    switch(direction)
+    {
+    case MoveDirection::None: return Vector2(0, 0);
+    case MoveDirection::West: return Vector2(-1, 0);;
+    case MoveDirection::East: return Vector2(1, 0);;
+    case MoveDirection::North: return Vector2(0, -1);;
+    case MoveDirection::South: return Vector2(0, 1);;
+    case MoveDirection::NorthEast: return Vector2(halfSqrt2, -halfSqrt2);;
+    case MoveDirection::SouthEast: return Vector2(halfSqrt2, halfSqrt2);;
+    case MoveDirection::NorthWest: return Vector2(-halfSqrt2, -halfSqrt2);;
+    case MoveDirection::SouthWest: return Vector2(-halfSqrt2, halfSqrt2);;
+    default: return Vector2(0, 0);
+    }
+}
+
+MoveDirection GetClosestMoveDirection(Vector2 v)
+{
+    if (v == Vector2(0, 0))
+    {
+        return MoveDirection::None;
+    }
+
+    float maxDot = -INFINITY;
+    MoveDirection closestDirection;
+
+    for (int i = 1; i < (int)MoveDirection::TotalDirections; ++i)
+    {
+        auto direction = static_cast<MoveDirection>(i);
+        Vector2 dir = MoveDirectionToVector2(direction);
+        float dot = dir.Dot(v);
+
+        if (dot > maxDot)
+        {
+            maxDot = dot;
+            closestDirection = direction;
+        }
+    }
+
+    return closestDirection;
+}
+
 void InputService::OnAdded()
 {
 
 }
-
 
 void InputService::ReceiveEvent(const IEntityEvent& ev)
 {
@@ -103,6 +147,8 @@ void InputService::HandleInput()
                     activePlayer = player;
                     //player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::CollectingSamples;
 
+                    scene->GetCameraFollower()->FollowEntity(player);
+
                     break;
                 }
             }
@@ -111,6 +157,9 @@ void InputService::HandleInput()
         PlayerEntity* self;
         if (activePlayer.TryGetValue(self))
         {
+            auto direction = GetInputDirection();
+            self->rigidBody->SetVelocity(MoveDirectionToVector2(direction).Normalize() * 200);
+
             if (mouse->RightPressed())
             {
                 bool attack = false;
@@ -145,4 +194,15 @@ void InputService::Render(Renderer* renderer)
     {
         renderer->RenderRectangleOutline(currentPlayer->Bounds(), Color::White(), -1);
     }
+}
+
+MoveDirection InputService::GetInputDirection()
+{
+    Vector2 inputDir;
+    if (g_leftButton.IsDown()) --inputDir.x;
+    if (g_rightButton.IsDown()) ++inputDir.x;
+    if (g_upButton.IsDown()) --inputDir.y;
+    if (g_downButton.IsDown()) ++inputDir.y;
+
+    return GetClosestMoveDirection(inputDir);
 }

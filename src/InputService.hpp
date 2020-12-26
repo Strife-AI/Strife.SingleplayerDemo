@@ -13,6 +13,8 @@ struct InputService : ISceneService
     void Render(Renderer* renderer);
     void ReceiveEvent(const IEntityEvent& ev) override;
 
+    static MoveDirection GetInputDirection();
+
     EntityReference<PlayerEntity> activePlayer;
     std::vector<PlayerEntity*> players;
     std::vector<CastleEntity*> spawns;

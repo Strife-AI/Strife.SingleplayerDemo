@@ -15,6 +15,22 @@ enum class PlayerState
     Attacking
 };
 
+enum class MoveDirection
+{
+    None,
+    North,
+    NorthEast,
+    East,
+    SouthEast,
+    South,
+    SouthWest,
+    West,
+    NorthWest,
+    TotalDirections
+};
+
+
+
 DEFINE_ENTITY(PlayerEntity, "player")
 {
     using NeuralNetwork = NeuralNetworkComponent<PlayerNetwork>;
