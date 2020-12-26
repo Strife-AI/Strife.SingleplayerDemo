@@ -10,9 +10,7 @@ add_executable(SingleplayerDemo
  	"PuckEntity.hpp"
 	"PuckEntity.cpp"
 	"GameML.hpp"
-	MessageHud.cpp
-	MessageHud.hpp
-	HealthBarComponent.cpp
+        HealthBarComponent.cpp
 	HealthBarComponent.hpp
 	FireballEntity.cpp
 	FireballEntity.hpp)

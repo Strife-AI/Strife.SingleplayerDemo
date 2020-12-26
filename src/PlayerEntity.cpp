@@ -6,8 +6,6 @@
 #include "Net/ReplicationManager.hpp"
 #include "Physics/PathFinding.hpp"
 #include "Renderer/Renderer.hpp"
-#include "torch/torch.h"
-#include "MessageHud.hpp"
 
 #include "CastleEntity.hpp"
 #include "FireballEntity.hpp"

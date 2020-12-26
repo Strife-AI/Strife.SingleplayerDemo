@@ -13,7 +13,6 @@
 #include "Physics/PathFinding.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Tools/Console.hpp"
-#include "MessageHud.hpp"
 
 #include "CastleEntity.hpp"
 

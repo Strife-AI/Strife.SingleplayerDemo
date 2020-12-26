@@ -6,7 +6,6 @@
 #include "Components/SpriteComponent.hpp"
 #include "Physics/PathFinding.hpp"
 #include "Net/ReplicationManager.hpp"
-#include "MessageHud.hpp"
 
 void CastleEntity::OnAdded()
 {
