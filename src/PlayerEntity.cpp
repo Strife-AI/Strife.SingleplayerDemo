@@ -12,6 +12,51 @@
 #include "CastleEntity.hpp"
 #include "FireballEntity.hpp"
 
+Vector2 MoveDirectionToVector2(MoveDirection direction)
+{
+    const float halfSqrt2 = sqrt(2) / 2;
+
+    switch(direction)
+    {
+    case MoveDirection::None: return Vector2(0, 0);
+    case MoveDirection::West: return Vector2(-1, 0);;
+    case MoveDirection::East: return Vector2(1, 0);;
+    case MoveDirection::North: return Vector2(0, -1);;
+    case MoveDirection::South: return Vector2(0, 1);;
+    case MoveDirection::NorthEast: return Vector2(halfSqrt2, -halfSqrt2);;
+    case MoveDirection::SouthEast: return Vector2(halfSqrt2, halfSqrt2);;
+    case MoveDirection::NorthWest: return Vector2(-halfSqrt2, -halfSqrt2);;
+    case MoveDirection::SouthWest: return Vector2(-halfSqrt2, halfSqrt2);;
+    default: return Vector2(0, 0);
+    }
+}
+
+MoveDirection GetClosestMoveDirection(Vector2 v)
+{
+    if (v == Vector2(0, 0))
+    {
+        return MoveDirection::None;
+    }
+
+    float maxDot = -INFINITY;
+    MoveDirection closestDirection;
+
+    for (int i = 1; i < (int)MoveDirection::TotalDirections; ++i)
+    {
+        auto direction = static_cast<MoveDirection>(i);
+        Vector2 dir = MoveDirectionToVector2(direction);
+        float dot = dir.Dot(v);
+
+        if (dot > maxDot)
+        {
+            maxDot = dot;
+            closestDirection = direction;
+        }
+    }
+
+    return closestDirection;
+}
+
 void PlayerEntity::OnAdded()
 {
     auto light = AddComponent<LightComponent<PointLight>>();
@@ -34,11 +79,11 @@ void PlayerEntity::OnAdded()
 
     scene->GetService<InputService>()->players.push_back(this);
 
-    // Setup network and sensors
-#if false
+// Setup network and sensors
     {
         auto nn = AddComponent<NeuralNetworkComponent<PlayerNetwork>>();
-        //nn->SetNetwork("nn");
+        nn->SetNetwork("nn");
+
 
         // Network only runs on server
         if (scene->isServer) nn->mode = NeuralNetworkMode::Deciding;
@@ -48,25 +93,23 @@ void PlayerEntity::OnAdded()
         // Called when:
         //  * Collecting input to make a decision
         //  * Adding a training sample
-        nn->collectInput = [=](PlayerModelInput& input)
+        nn->collectInput = [=](Observation& input)
         {
-            input.velocity = rigidBody->GetVelocity();
             gridSensor->Read(input.grid);
         };
 
         // Called when the decider makes a decision
-        nn->receiveDecision = [=](PlayerDecision& decision)
+        nn->receiveDecision = [=](TrainingLabel& decision)
         {
-
+            SetMoveDirection(MoveDirectionToVector2(static_cast<MoveDirection>(decision.actionIndex)) * 200);
         };
 
         // Collects what decision the player made
-        nn->collectDecision = [=](PlayerDecision& outDecision)
+        nn->collectDecision = [=](TrainingLabel& outDecision)
         {
-            outDecision.action = PlayerAction::Down;
+            outDecision.actionIndex = static_cast<int>(lastDirection);
         };
     }
-#endif
 }
 
 void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)

@@ -38,8 +38,6 @@ struct Game : IGame
             scene->AddService<InputService>();
             scene->AddService<NetworkPhysics>(scene->isServer);
             scene->AddService<MessageHud>();
-
-            //scene->GetEngine()->GetConsole()->Execute("light 0");
         }
     }
 
@@ -48,16 +46,14 @@ struct Game : IGame
         auto map = "erebor"_sid;
         auto engine = GetEngine();
 
-        engine->StartSinglePlayerGame(map);
-
         auto neuralNetworkManager = engine->GetNeuralNetworkManager();
 
         // Create networks
         {
             auto playerDecider = neuralNetworkManager->CreateDecider<PlayerDecider>();
-            auto playerTrainer = neuralNetworkManager->CreateTrainer<PlayerTrainer>();
+            auto playerTrainer = neuralNetworkManager->CreateTrainer<PlayerTrainer>(engine->GetMetricsManager()->GetOrCreateMetric("loss"));
 
-            //neuralNetworkManager->CreateNetwork("nn", playerDecider, playerTrainer);
+            neuralNetworkManager->CreateNetwork("nn", playerDecider, playerTrainer);
         }
 
         // Add types of objects the sensors can pick up
@@ -68,6 +64,8 @@ struct Game : IGame
 
             neuralNetworkManager->SetSensorObjectDefinition(sensorDefinition);
         }
+
+        engine->StartSinglePlayerGame(map);
     }
 
     std::string initialConsoleCmd;

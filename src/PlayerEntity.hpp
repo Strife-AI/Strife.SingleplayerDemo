@@ -31,6 +31,8 @@ enum class MoveDirection
 
 DEFINE_ENTITY(PlayerEntity, "player")
 {
+    using NeuralNetwork = NeuralNetworkComponent<PlayerNetwork>;
+
     void Attack(Entity* entity);
     void SetMoveDirection(Vector2 direction);
 
@@ -49,6 +51,10 @@ DEFINE_ENTITY(PlayerEntity, "player")
     PlayerState state = PlayerState::None;
     float attackCoolDown = 0;
     int playerId;
+    MoveDirection lastDirection = MoveDirection::None;
 
     void Die(const OutOfHealthEvent* outOfHealth);
 };
+
+Vector2 MoveDirectionToVector2(MoveDirection direction);
+MoveDirection GetClosestMoveDirection(Vector2 v);
