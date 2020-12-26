@@ -20,7 +20,7 @@ DEFINE_COMPONENT(HealthBarComponent)
     void Render(Renderer* renderer) override;
     void TakeDamage(int amount, Entity* fromEntity = nullptr);
 
-    SyncVar<uint16_t> health {100 };
+    int health = 100;
     Vector2 offsetFromCenter;
     int maxHealth = 100;
 };

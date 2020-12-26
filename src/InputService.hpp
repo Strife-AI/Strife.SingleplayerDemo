@@ -8,17 +8,16 @@ struct CastleEntity;
 
 struct InputService : ISceneService
 {
-    void OnAdded() override;
     void HandleInput();
     void Render(Renderer* renderer);
     void ReceiveEvent(const IEntityEvent& ev) override;
+    void SpawnPlayer(Vector2 position, int playerId);
 
     static MoveDirection GetInputDirection();
 
     EntityReference<PlayerEntity> activePlayer;
     std::vector<PlayerEntity*> players;
     std::vector<CastleEntity*> spawns;
-    std::vector<Vector2> spawnPositions;
 
     bool gameOver = false;
 };

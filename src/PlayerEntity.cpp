@@ -69,7 +69,7 @@ void PlayerEntity::OnAdded()
 #endif
 }
 
-void PlayerEntity::ReceiveServerEvent(const IEntityEvent& ev)
+void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
 {
     if (auto outOfHealth = ev.Is<OutOfHealthEvent>())
     {
@@ -81,18 +81,10 @@ void PlayerEntity::Die(const OutOfHealthEvent* outOfHealth)
 {
     Destroy();
 
-    auto& selfName = scene->replicationManager->GetClient(
-        outOfHealth->killer->GetComponent<NetComponent>()->ownerClientId).clientName;
-    auto& otherName = scene->replicationManager->GetClient(playerId).clientName;
-
-    scene->SendEvent(BroadcastToClientMessage(selfName + " killed " + otherName + "'s bot!"));
-
     for (auto spawn : scene->GetService<InputService>()->spawns)
     {
         if (spawn->playerId == playerId)
         {
-            auto server = GetEngine()->GetServerGame();
-
             spawn->StartTimer(10, [=]
             {
                 spawn->SpawnPlayer();

@@ -11,23 +11,19 @@
 void CastleEntity::OnAdded()
 {
     spriteComponent = AddComponent<SpriteComponent>("castle"_sid);
+    spriteComponent->scale = Vector2(5.0f);
 
     Vector2 size{ 67 * 5, 55 * 5 };
     SetDimensions(size);
     scene->GetService<PathFinderService>()->AddObstacle(Bounds());
 
-    spriteComponent->scale = Vector2(5.0f);
-
     auto rigidBody = AddComponent<RigidBodyComponent>(b2_staticBody);
-
     rigidBody->CreateBoxCollider(size);
-
-    rigidBody->CreateBoxCollider({ 600, 600 }, true);
 
     auto health = AddComponent<HealthBarComponent>();
     health->offsetFromCenter = -size.YVector() / 2 - Vector2(0, 5);
     health->maxHealth = 1000;
-    health->health.SetValue(1000);
+    health->health = 1000;
 
     auto offset = size / 2 + Vector2(40, 40);
 

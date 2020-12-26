@@ -68,31 +68,12 @@ MoveDirection GetClosestMoveDirection(Vector2 v)
     return closestDirection;
 }
 
-void InputService::OnAdded()
-{
-
-}
-
 void InputService::ReceiveEvent(const IEntityEvent& ev)
 {
     if (ev.Is<SceneLoadedEvent>())
     {
-        spawnPositions.push_back({ 1000, 1000 });
-
-        auto spawnPoint = spawnPositions[spawnPositions.size() - 1];
-        spawnPositions.pop_back();
-
-        auto spawn = scene->CreateEntity<CastleEntity>(spawnPoint);
-        spawn->playerId = 0;
-
-        for (int i = 0; i < 4; ++i)
-        {
-            spawn->SpawnPlayer();
-        }
-
-        spawns.push_back(spawn);
-
-        scene->GetCameraFollower()->FollowMouse();
+        SpawnPlayer(Vector2(950, 950), 0);
+        SpawnPlayer(Vector2(2000, 950), 1);
     }
     if (ev.Is<UpdateEvent>())
     {
@@ -101,17 +82,6 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
     else if (auto renderEvent = ev.Is<RenderEvent>())
     {
         Render(renderEvent->renderer);
-    }
-    else if (auto joinedServerEvent = ev.Is<JoinedServerEvent>())
-    {
-        scene->replicationManager->localClientId = joinedServerEvent->selfId;
-    }
-    else if (auto connectedEvent = ev.Is<PlayerConnectedEvent>())
-    {
-        if (scene->isServer)
-        {
-
-        }
     }
 }
 
@@ -198,4 +168,22 @@ MoveDirection InputService::GetInputDirection()
     if (g_downButton.IsDown()) ++inputDir.y;
 
     return GetClosestMoveDirection(inputDir);
+}
+
+void InputService::SpawnPlayer(Vector2 position, int playerId)
+{
+    auto spawn = scene->CreateEntity<CastleEntity>(position);
+    spawn->playerId = playerId;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        spawn->SpawnPlayer();
+    }
+
+    spawns.push_back(spawn);
+
+    if (playerId == 0)
+    {
+        scene->GetCameraFollower()->CenterOn(position);
+    }
 }

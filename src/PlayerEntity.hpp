@@ -35,7 +35,7 @@ DEFINE_ENTITY(PlayerEntity, "player")
     void SetMoveDirection(Vector2 direction);
 
     void OnAdded() override;
-    void ReceiveServerEvent(const IEntityEvent& ev) override;
+    void ReceiveEvent(const IEntityEvent& ev) override;
     void OnDestroyed() override;
 
     void Render(Renderer* renderer) override;
