@@ -49,14 +49,6 @@ void CastleEntity::Update(float deltaTime)
         : Color::White();
 }
 
-void CastleEntity::ReceiveServerEvent(const IEntityEvent& ev)
-{
-    if (ev.Is<OutOfHealthEvent>())
-    {
-        Destroy();
-    }
-}
-
 void CastleEntity::SpawnPlayer()
 {
     auto position = _spawnSlots[_nextSpawnSlotId];
@@ -81,5 +73,8 @@ void CastleEntity::OnDestroyed()
 
 void CastleEntity::ReceiveEvent(const IEntityEvent& ev)
 {
-
+    if (ev.Is<OutOfHealthEvent>())
+    {
+        Destroy();
+    }
 }

@@ -16,7 +16,7 @@ DEFINE_ENTITY(FireballEntity, "fireball")
 
     void OnAdded() override;
     void OnDestroyed() override;
-    void ReceiveServerEvent(const IEntityEvent& ev) override;
+    void ReceiveEvent(const IEntityEvent& ev) override;
     void Update(float deltaTime) override;
 
     PointLight light;

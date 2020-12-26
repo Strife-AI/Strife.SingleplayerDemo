@@ -127,7 +127,7 @@ void PlayerEntity::Render(Renderer* renderer)
     }
 }
 
-void PlayerEntity::ServerFixedUpdate(float deltaTime)
+void PlayerEntity::FixedUpdate(float deltaTime)
 {
     attackCoolDown -= deltaTime;
 
@@ -166,15 +166,18 @@ void PlayerEntity::ServerFixedUpdate(float deltaTime)
     }
 }
 
-void PlayerEntity::MoveTo(Vector2 position)
-{
-    pathFollower->SetTarget(position);
-    state = PlayerState::Moving;
-}
-
 void PlayerEntity::Attack(Entity* entity)
 {
     attackTarget = entity;
     state = PlayerState::Attacking;
-    pathFollower->FollowEntity(entity, 200);
+}
+
+void PlayerEntity::SetMoveDirection(Vector2 direction)
+{
+    rigidBody->SetVelocity(direction);
+
+    if (direction != Vector2(0, 0))
+    {
+        state = PlayerState::Moving;
+    }
 }

@@ -158,20 +158,12 @@ void InputService::HandleInput()
         if (activePlayer.TryGetValue(self))
         {
             auto direction = GetInputDirection();
-            self->rigidBody->SetVelocity(MoveDirectionToVector2(direction).Normalize() * 200);
+            self->SetMoveDirection(MoveDirectionToVector2(direction) * 200);
 
             if (mouse->RightPressed())
             {
-                bool attack = false;
                 for (auto entity : scene->GetEntities())
                 {
-                    auto netComponent = entity->GetComponent<NetComponent>(false);
-
-                    if (netComponent == nullptr)
-                    {
-                        continue;
-                    }
-
                     if (entity->GetComponent<HealthBarComponent>(false) == nullptr)
                     {
                         continue;
@@ -179,7 +171,8 @@ void InputService::HandleInput()
 
                     if (entity->Bounds().ContainsPoint(scene->GetCamera()->ScreenToWorld(mouse->MousePosition())))
                     {
-
+                        self->Attack(entity);
+                        break;
                     }
                 }
             }

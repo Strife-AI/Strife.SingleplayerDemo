@@ -22,7 +22,7 @@ void FireballEntity::OnDestroyed()
     scene->GetLightManager()->RemoveLight(&light);
 }
 
-void FireballEntity::ReceiveServerEvent(const IEntityEvent& ev)
+void FireballEntity::ReceiveEvent(const IEntityEvent& ev)
 {
     if (auto contactBegin = ev.Is<ContactBeginEvent>())
     {

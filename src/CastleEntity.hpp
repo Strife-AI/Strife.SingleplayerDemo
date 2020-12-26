@@ -13,7 +13,6 @@ DEFINE_ENTITY(CastleEntity, "castle")
     void Update(float deltaTime) override;
     void SpawnPlayer();
 
-    void ReceiveServerEvent(const IEntityEvent& ev) override;
     void ReceiveEvent(const IEntityEvent& ev) override;
 
     int playerId;

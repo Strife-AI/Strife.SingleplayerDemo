@@ -29,21 +29,17 @@ enum class MoveDirection
     TotalDirections
 };
 
-
-
 DEFINE_ENTITY(PlayerEntity, "player")
 {
-    using NeuralNetwork = NeuralNetworkComponent<PlayerNetwork>;
-
-    void MoveTo(Vector2 position);
     void Attack(Entity* entity);
+    void SetMoveDirection(Vector2 direction);
 
     void OnAdded() override;
     void ReceiveServerEvent(const IEntityEvent& ev) override;
     void OnDestroyed() override;
 
     void Render(Renderer* renderer) override;
-    void ServerFixedUpdate(float deltaTime) override;
+    void FixedUpdate(float deltaTime) override;
 
     RigidBodyComponent* rigidBody;
     PathFollowerComponent* pathFollower;
