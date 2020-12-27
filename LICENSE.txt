@@ -14,7 +14,7 @@ entirely or substantially, from the functionality of the Software.  Any license
 notice or attribution required by the License must also include this Commons Cause 
 License Condition notice.
 
-Software: Strife.Engine
+Software: Strife.SingleplayerDemo
 Licensor: Strife AI LLC
 
 Copyright (c) 2020 STRIFE AI LLC.  All rights reserved.
