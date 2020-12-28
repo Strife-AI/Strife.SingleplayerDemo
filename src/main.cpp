@@ -22,7 +22,7 @@ struct Game : IGame
             .SetGameName("breakout")
             .ExecuteUserConfig("user.cfg")
             .EnableDevConsole("console-font")
-            .AddResourcePack("MultiplayerDemo.x2rp");
+            .AddResourcePack("SingleplayerDemo.x2rp");
     }
 
     void ConfigureEngine(EngineConfig& config) override

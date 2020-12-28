@@ -4,5 +4,12 @@ project(SingleplayerDemo VERSION 1 LANGUAGES C CXX)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
 
-add_subdirectory(src)
+if(MSVC)
+	add_compile_options("/EHsc")
+	add_compile_options("/MP")
+
+	set(CMAKE_CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -DNOGDI -DWIN32")
+endif()
+
 add_subdirectory(Strife.Engine)
+add_subdirectory(src)

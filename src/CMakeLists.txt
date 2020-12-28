@@ -25,11 +25,9 @@ target_link_libraries(SingleplayerDemo Strife.Engine Strife.ML torch)
 if (MSVC)
   file(GLOB TORCH_DLLS "${TORCH_DIR}/lib/*.dll")
 
-  message(================ ${TORCH_DIR})
-
-  add_custom_command(TARGET Sample
+  add_custom_command(TARGET SingleplayerDemo
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                     ${TORCH_DLLS}
-                     $<TARGET_FILE_DIR:Sample>)
+						${TORCH_DLLS}
+						$<TARGET_FILE_DIR:SingleplayerDemo>)
 endif()
