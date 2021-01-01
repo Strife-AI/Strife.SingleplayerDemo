@@ -9,7 +9,7 @@
 
 void CastleEntity::OnAdded()
 {
-    spriteComponent = AddComponent<SpriteComponent>("castle"_sid);
+    spriteComponent = AddComponent<SpriteComponent>("castle");
     spriteComponent->scale = Vector2(5.0f);
 
     Vector2 size{ 67 * 5, 55 * 5 };
