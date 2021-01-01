@@ -21,8 +21,13 @@ struct Game : IGame
             .SetWindowCaption("Breakout")
             .SetGameName("breakout")
             .ExecuteUserConfig("user.cfg")
-            .EnableDevConsole("console-font")
-            .AddResourcePack("SingleplayerDemo.x2rp");
+            .EnableDevConsole("console-font");
+
+        auto resourceManager = ResourceManager::GetInstance();
+        resourceManager->SetBaseAssetPath("../assets");
+        resourceManager->LoadResourceFromFile("Sprites/castle.png", "castle");
+        resourceManager->LoadResourceFromFile("Tilemaps/Erebor.tmx", "erebor");
+        resourceManager->LoadResourceFromFile("Sprites/Spritesheets/font.png", "console-font", ".sfnt");
     }
 
     void ConfigureEngine(EngineConfig& config) override
@@ -41,7 +46,7 @@ struct Game : IGame
 
     void OnGameStart() override
     {
-        auto map = "erebor"_sid;
+        auto map = "erebor";
         auto engine = GetEngine();
 
         auto neuralNetworkManager = engine->GetNeuralNetworkManager();
