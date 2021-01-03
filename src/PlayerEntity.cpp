@@ -81,10 +81,7 @@ void PlayerEntity::OnAdded()
     {
         auto nn = AddComponent<NeuralNetworkComponent<PlayerNetwork>>();
         nn->SetNetwork("nn");
-
-
-        // Network only runs on server
-        if (scene->isServer) nn->mode = NeuralNetworkMode::Deciding;
+    	nn->mode = NeuralNetworkMode::Deciding;
 
         auto gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
 
