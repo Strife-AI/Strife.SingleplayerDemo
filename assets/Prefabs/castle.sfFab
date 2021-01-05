@@ -1,6 +1,6 @@
 {
   "name": "castle",
   "properties": [
-    {"name": "sprite", "value": "castle"}
+    {"name": "sprite", "value": "castleSprite"}
   ]
 }

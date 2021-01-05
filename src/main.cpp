@@ -21,12 +21,11 @@ struct Game : IGame
             .SetWindowCaption("Breakout")
             .SetGameName("breakout")
             .ExecuteUserConfig("user.cfg")
+            .SetProjectFile("../assets/SingleplayerDemo.sfProj")
             .EnableDevConsole("console-font");
 
         auto resourceManager = ResourceManager::GetInstance();
         resourceManager->SetBaseAssetPath("../assets");
-        resourceManager->LoadResourceFromFile("Sprites/castle.png", "castle");
-        resourceManager->LoadResourceFromFile("Tilemaps/Erebor.tmx", "erebor");
         resourceManager->LoadResourceFromFile("Sprites/Spritesheets/font.png", "console-font", ".sfnt");
     }
 

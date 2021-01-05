@@ -10,7 +10,6 @@
   ],
   "resources": [
     {"name": "erebor", "type": "tiled-tilemap", "path": "Tilemaps/Erebor.tmx"},
-    {"name": "isengard", "type": "tiled-tilemap", "path": "Tilemaps/Isegard.tmx"},
     {"name": "castle", "type": "prefab", "path": "Prefabs/castle.sfFab"},
     {"name": "castleSprite", "type": "sprite", "path": "Sprites/castle.png"}
   ]
