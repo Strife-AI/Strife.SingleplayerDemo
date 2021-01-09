@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Components/PathFollowerComponent.hpp>
-#include "GameML.hpp"
+#include "GameML/DDQN.hpp"
 #include "Components/NetComponent.hpp"
 #include "ML/ML.hpp"
 #include "Scene/BaseEntity.hpp"
@@ -31,7 +31,7 @@ enum class MoveDirection
 
 DEFINE_ENTITY(PlayerEntity, "player")
 {
-    using NeuralNetwork = NeuralNetworkComponent<PlayerNetwork>;
+    using NeuralNetwork = NeuralNetworkComponent<DeepQNetwork>;
 
     void Attack(Entity* entity);
     void SetMoveDirection(Vector2 direction);

@@ -3,6 +3,7 @@
 #include "Engine.hpp"
 #include "InputService.hpp"
 #include "PlayerEntity.hpp"
+#include "GameML/DDQN.hpp"
 #include "Net/NetworkPhysics.hpp"
 #include "Scene/IGame.hpp"
 #include "Scene/Scene.hpp"
@@ -53,10 +54,10 @@ struct Game : IGame
 
         // Create networks
         {
-            auto playerDecider = neuralNetworkManager->CreateDecider<PlayerDecider>();
-            auto playerTrainer = neuralNetworkManager->CreateTrainer<PlayerTrainer>(engine->GetMetricsManager()->GetOrCreateMetric("loss"));
+            auto decider = neuralNetworkManager->CreateDecider<DQNDecider>();
+            auto trainer = neuralNetworkManager->CreateTrainer<DQNTrainer>(engine->GetMetricsManager()->GetOrCreateMetric("loss"));
 
-            neuralNetworkManager->CreateNetwork("nn", playerDecider, playerTrainer);
+            neuralNetworkManager->CreateNetwork("nn", decider, trainer);
         }
 
         // Add types of objects the sensors can pick up

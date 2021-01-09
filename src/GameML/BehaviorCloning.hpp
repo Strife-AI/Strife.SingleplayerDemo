@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../Strife.ML/NewStuff.hpp"
-#include "Math/Vector2.hpp"
 #include "ML/ML.hpp"
 #include "../../Strife.ML/TensorPacking.hpp"
 #include <torch/torch.h>
@@ -30,15 +29,14 @@ struct TrainingLabel : StrifeML::ISerializable
     int actionIndex;
 };
 
-struct PlayerNetwork : StrifeML::NeuralNetwork<Observation, TrainingLabel, 1>
+struct BehaviorCloningNetwork : StrifeML::NeuralNetwork<Observation, TrainingLabel, 1>
 {
     torch::nn::Embedding embedding{ nullptr };
     torch::nn::Conv2d conv1{ nullptr }, conv2{ nullptr }, conv3{ nullptr }, conv4{ nullptr };
     torch::nn::Linear dense{ nullptr };
     std::shared_ptr<torch::optim::Adam> optimizer;
 
-    //PlayerNetwork(int totalObjects, int totalActions)
-    PlayerNetwork()
+    BehaviorCloningNetwork()
     {
         embedding = register_module("embedding", torch::nn::Embedding(3, 4));
         conv1 = register_module("conv1", torch::nn::Conv2d(4, 8, 5));
@@ -143,15 +141,15 @@ struct PlayerNetwork : StrifeML::NeuralNetwork<Observation, TrainingLabel, 1>
     }
 };
 
-struct PlayerDecider : StrifeML::Decider<PlayerNetwork>
+struct BCDecider : StrifeML::Decider<BehaviorCloningNetwork>
 {
 
 };
 
-struct PlayerTrainer : StrifeML::Trainer<PlayerNetwork>
+struct BCTrainer : StrifeML::Trainer<BehaviorCloningNetwork>
 {
-    PlayerTrainer(Metric* lossMetric)
-        : Trainer<PlayerNetwork>(32, 10000),
+    BCTrainer(Metric* lossMetric)
+        : Trainer<BehaviorCloningNetwork>(32, 10000),
           lossMetric(lossMetric)
     {
         LogStartup();

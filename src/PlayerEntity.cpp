@@ -79,7 +79,7 @@ void PlayerEntity::OnAdded()
 
 // Setup network and sensors
     {
-        auto nn = AddComponent<NeuralNetworkComponent<PlayerNetwork>>();
+        auto nn = AddComponent<NeuralNetworkComponent<DeepQNetwork>>();
         nn->SetNetwork("nn");
     	nn->mode = NeuralNetworkMode::Deciding;
 
@@ -88,19 +88,21 @@ void PlayerEntity::OnAdded()
         // Called when:
         //  * Collecting input to make a decision
         //  * Adding a training sample
-        nn->collectInput = [=](Observation& input)
+        nn->collectInput = [=](InitialState& input)
         {
             gridSensor->Read(input.grid);
         };
 
         // Called when the decider makes a decision
-        nn->receiveDecision = [=](TrainingLabel& decision)
+        nn->receiveDecision = [=](Transition& decision)
         {
             SetMoveDirection(MoveDirectionToVector2(static_cast<MoveDirection>(decision.actionIndex)) * 200);
         };
 
+    	// todo brendan make a decision for every single bot
+        // todo brendan set the other properties
         // Collects what decision the player made
-        nn->collectDecision = [=](TrainingLabel& outDecision)
+        nn->collectDecision = [=](Transition& outDecision)
         {
             outDecision.actionIndex = static_cast<int>(lastDirection);
         };

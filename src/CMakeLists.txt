@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 add_executable(SingleplayerDemo
-	main.cpp
+	"main.cpp"
 	"PlayerEntity.hpp"
 	"PlayerEntity.cpp"
 	"InputService.hpp"
@@ -9,11 +9,12 @@ add_executable(SingleplayerDemo
 	"CastleEntity.cpp"
  	"PuckEntity.hpp"
 	"PuckEntity.cpp"
-	"GameML.hpp"
-        HealthBarComponent.cpp
-	HealthBarComponent.hpp
-	FireballEntity.cpp
-	FireballEntity.hpp)
+	"GameML/BehaviorCloning.hpp"
+    "HealthBarComponent.cpp"
+	"HealthBarComponent.hpp"
+	"FireballEntity.cpp"
+	"FireballEntity.hpp"
+ "GameML/DDQN.hpp")
 
 find_package(torch REQUIRED)
 
