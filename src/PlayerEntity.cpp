@@ -61,7 +61,7 @@ void PlayerEntity::OnAdded()
     light->position = Center();
     light->color = Color(255, 255, 255, 255);
     light->maxDistance = 400;
-    light->intensity = 0.6;
+    light->intensity = 0.6f;
 
     health = AddComponent<HealthBarComponent>();
     health->offsetFromCenter = Vector2(0, -20);
@@ -77,20 +77,21 @@ void PlayerEntity::OnAdded()
 
     scene->GetService<InputService>()->players.push_back(this);
 
-// Setup network and sensors
+	// Setup network and sensors
     {
         auto nn = AddComponent<NeuralNetworkComponent<DeepQNetwork>>();
         nn->SetNetwork("nn");
     	nn->mode = NeuralNetworkMode::Deciding;
 
         auto gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
-
+        gridSensor->Read(previousInputState);
+    	
         // Called when:
         //  * Collecting input to make a decision
         //  * Adding a training sample
         nn->collectInput = [=](InitialState& input)
         {
-            gridSensor->Read(input.grid);
+            gridSensor->Read(previousInputState);
         };
 
         // Called when the decider makes a decision
@@ -100,10 +101,11 @@ void PlayerEntity::OnAdded()
         };
 
     	// todo brendan make a decision for every single bot
-        // todo brendan set the other properties
         // Collects what decision the player made
         nn->collectDecision = [=](Transition& outDecision)
         {
+        	gridSensor->Read(outDecision.grid);
+        	outDecision.reward = 0.0f; // todo brendan reward
             outDecision.actionIndex = static_cast<int>(lastDirection);
         };
     }
