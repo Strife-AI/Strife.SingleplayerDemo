@@ -7,6 +7,11 @@
 #include "Physics/PathFinding.hpp"
 #include "Net/ReplicationManager.hpp"
 
+void CastleEntity::DoSerialize(EntitySerializer& serializer)
+{
+
+}
+
 void CastleEntity::OnAdded()
 {
     spriteComponent = AddComponent<SpriteComponent>("castleSprite");

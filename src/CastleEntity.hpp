@@ -14,6 +14,7 @@ DEFINE_ENTITY(CastleEntity, "castle")
     void SpawnPlayer();
 
     void ReceiveEvent(const IEntityEvent& ev) override;
+    void DoSerialize(EntitySerializer& serializer) override;
 
     int playerId;
 
