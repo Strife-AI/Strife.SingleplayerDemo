@@ -11,6 +11,7 @@
   "resources": [
     {"name": "erebor", "type": "tiled-tilemap", "path": "Tilemaps/Erebor.tmx"},
     {"name": "castle", "type": "prefab", "path": "Prefabs/castle.sfFab"},
-    {"name": "castleSprite", "type": "sprite", "path": "Sprites/castle.png"}
+    {"name": "castleSprite", "type": ".png", "path": "Sprites/castle.png"},
+    {"name": "console-font", "type": ".sfnt", "path": "Sprites/Spritesheets/font.png"}
   ]
 }
