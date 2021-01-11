@@ -5,28 +5,10 @@
         {"name": "position", "value": "0.0 0.0"}
     ]},
     {"name": "castle1", "prefab": "castle", "properties": [
-      {"name": "position", "value": "736.0 736.0"}
+      {"name": "position", "value": "950.0 950.0"}
     ]},
     {"name": "castle2", "prefab": "castle", "properties": [
-      {"name": "position", "value": "1904.0 736.0"}
-    ]},
-    {"name": "castle3", "prefab": "castle", "properties": [
-      {"name": "position", "value": "3088.0 736.0"}
-    ]},
-    {"name": "castle4", "prefab": "castle", "properties": [
-      {"name": "position", "value": "736.0 1939.0"}
-    ]},
-    {"name": "castle5", "prefab": "castle", "properties": [
-      {"name": "position", "value": "3088.0 1952.0"}
-    ]},
-    {"name": "castle6", "prefab": "castle", "properties": [
-      {"name": "position", "value": "736.0 3149.0"}
-    ]},
-    {"name": "castle7", "prefab": "castle", "properties": [
-      {"name": "position", "value": "1943.0 3152.0"}
-    ]},
-    {"name": "castle7", "prefab": "castle", "properties": [
-      {"name": "position", "value": "3088.0 3148.0"}
+      {"name": "position", "value": "2000.0 950.0"}
     ]}
   ]
 }
