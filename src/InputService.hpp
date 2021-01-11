@@ -11,7 +11,7 @@ struct InputService : ISceneService
     void HandleInput();
     void Render(Renderer* renderer);
     void ReceiveEvent(const IEntityEvent& ev) override;
-    void SpawnPlayer(Vector2 position, int playerId);
+    void SpawnPlayer(CastleEntity* spawn, int playerId);
 
     static MoveDirection GetInputDirection();
 

@@ -26,8 +26,12 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
 {
     if (ev.Is<SceneLoadedEvent>())
     {
-        SpawnPlayer(Vector2(950, 950), 0);
-        SpawnPlayer(Vector2(2000, 950), 1);
+        auto spawnPoints = scene->GetEntitiesOfType<CastleEntity>();
+
+        for (int i = 0; i < spawnPoints.size(); ++i)
+        {
+            SpawnPlayer(spawnPoints[i], i);
+        }
     }
     if (ev.Is<UpdateEvent>())
     {
@@ -125,9 +129,8 @@ MoveDirection InputService::GetInputDirection()
     return GetClosestMoveDirection(inputDir);
 }
 
-void InputService::SpawnPlayer(Vector2 position, int playerId)
+void InputService::SpawnPlayer(CastleEntity* spawn, int playerId)
 {
-    auto spawn = scene->CreateEntity<CastleEntity>(position);
     spawn->playerId = playerId;
 
     for (int i = 0; i < 4; ++i)
@@ -139,6 +142,6 @@ void InputService::SpawnPlayer(Vector2 position, int playerId)
 
     if (playerId == 0)
     {
-        scene->GetCameraFollower()->CenterOn(position);
+        scene->GetCameraFollower()->CenterOn(spawn->Center());
     }
 }
