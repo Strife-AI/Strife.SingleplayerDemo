@@ -1,0 +1,14 @@
+{
+  "name": "erebor",
+  "entities": [
+    {"name": "erebor", "type": "tilemap", "properties": [
+        {"name": "position", "value": "0.0 0.0"}
+    ]},
+    {"name": "castle1", "prefab": "castle", "properties": [
+      {"name": "position", "value": "950.0 950.0"}
+    ]},
+    {"name": "castle2", "prefab": "castle", "properties": [
+      {"name": "position", "value": "2000.0 950.0"}
+    ]}
+  ]
+}

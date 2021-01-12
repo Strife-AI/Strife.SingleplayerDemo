@@ -18,16 +18,15 @@ struct Game : IGame
     {
         config
             .SetDefaultScene("erebor"_sid)
-            .SetWindowCaption("Breakout")
-            .SetGameName("breakout")
+            .SetWindowCaption("Strife Singleplayer Demo")
+            .SetGameName("Strife Singleplayer Demo")
             .ExecuteUserConfig("user.cfg")
+            .SetProjectFile("../assets/SingleplayerDemo.sfProj")
             .EnableDevConsole("console-font");
 
         auto resourceManager = ResourceManager::GetInstance();
         resourceManager->SetBaseAssetPath("../assets");
-        resourceManager->LoadResourceFromFile("Sprites/castle.png", "castle");
-        resourceManager->LoadResourceFromFile("Tilemaps/Erebor.tmx", "erebor");
-        resourceManager->LoadResourceFromFile("Sprites/Spritesheets/font.png", "console-font", ".sfnt");
+        resourceManager->LoadResourceFromFile("Sprites/Spritesheets/font.sfnt", "console-font", ".sfnt");
     }
 
     void ConfigureEngine(EngineConfig& config) override

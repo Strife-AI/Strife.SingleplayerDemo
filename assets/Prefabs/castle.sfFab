@@ -1,0 +1,8 @@
+{
+  "name": "castle",
+  "entityType": "castle",
+  "type": "prefab",
+  "properties": [
+    {"name": "sprite", "value": "castleSprite"}
+  ]
+}

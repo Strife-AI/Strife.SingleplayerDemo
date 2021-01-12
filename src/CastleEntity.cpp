@@ -7,9 +7,14 @@
 #include "Physics/PathFinding.hpp"
 #include "Net/ReplicationManager.hpp"
 
+void CastleEntity::DoSerialize(EntitySerializer& serializer)
+{
+
+}
+
 void CastleEntity::OnAdded()
 {
-    spriteComponent = AddComponent<SpriteComponent>("castle");
+    spriteComponent = AddComponent<SpriteComponent>("castleSprite");
     spriteComponent->scale = Vector2(5.0f);
 
     Vector2 size{ 67 * 5, 55 * 5 };
