@@ -4,7 +4,6 @@
 #include "ML/ML.hpp"
 #include "../../Strife.ML/TensorPacking.hpp"
 #include <torch/torch.h>
-
 #include "Tools/MetricsManager.hpp"
 
 const int GridSize = 40;
@@ -50,6 +49,9 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
     	auto totalActions = 9;
     	
         embedding = register_module("embedding", torch::nn::Embedding(totalObservables, embeddingSize));
+
+    	// todo brendan we can write a loop for these
+    	// todo brendan add back in batch norm
         conv1 = register_module("conv1", torch::nn::Conv2d(4, 8, 3));
         conv2 = register_module("conv2", torch::nn::Conv2d(8, 16, 3));
         conv3 = register_module("conv3", torch::nn::Conv2d(16, 32, 3));
@@ -60,33 +62,23 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 
     void TrainBatch(Grid<const SampleType> input, StrifeML::TrainingBatchResult& outResult) override
     {
-        //Log("Train batch start\n");
         optimizer->zero_grad();
-
-        //Log("Pack spatial\n");
+    	
         torch::Tensor spatialInput = PackIntoTensor(input, [=](auto& sample) { return sample.input.grid; });
 
-        //Log("Pack labels\n");
         torch::Tensor labels = PackIntoTensor(input, [=](auto& sample) { return static_cast<int64_t>(sample.output.actionIndex); }).squeeze();
 
-        //Log("Predicting...\n");
         torch::Tensor prediction = Forward(spatialInput).squeeze();
 
         //std::cout << prediction.sizes() << std::endl;
         //std::cout << labels << std::endl;
 
-        //Log("Calculate loss\n");
         torch::Tensor loss = torch::nn::functional::nll_loss(prediction, labels);
 
-        //Log("Call backward\n");
         loss.backward();
-
-        //Log("Call optimizer step\n");
         optimizer->step();
 
         outResult.loss = loss.item<float>();
-
-        //Log("Train batch end\n");
     }
 
     void MakeDecision(Grid<const InputType> input, OutputType& output) override
@@ -119,8 +111,7 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 
         x = embedding->forward(x);     // N x 80 x 80 x 4
         x = x.permute({ 0, 3, 1, 2 }); // N x 4 x 80 x 80
-
-
+        
         x = leaky_relu(conv1->forward(x)); // N x 8 x 76 x 76
         x = dropout(x, 0.5, is_training());
         x = max_pool2d(x, { 2, 2 }); // N x 8 x 38 x 38
@@ -145,8 +136,9 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
             x = x.view({batchSize, 64});
         }
 
+    	// todo brendan add in dense layers and then LSTM
+
         x = dense->forward(x);
-        x = log_softmax(x, 1);
 
         return x;
     }
