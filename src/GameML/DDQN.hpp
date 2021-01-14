@@ -33,6 +33,7 @@ struct Transition : StrifeML::ISerializable
 	int actionIndex;
 	float reward;
 	GridSensorOutput<GridSize, GridSize> grid;
+	bool isFinalState = false;
 };
 
 struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>

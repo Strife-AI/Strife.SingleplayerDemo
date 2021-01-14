@@ -1,9 +1,5 @@
 
 #include "InputService.hpp"
-
-#include <slikenet/BitStream.h>
-#include <slikenet/peerinterface.h>
-
 #include "Engine.hpp"
 #include "PuckEntity.hpp"
 #include "Components/RigidBodyComponent.hpp"
