@@ -70,6 +70,9 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
         torch::Tensor rewards = PackIntoTensor(input, [=](auto& sample) { return static_cast<float_t>(sample.output.reward); }).squeeze();
     	torch::Tensor nextStates = PackIntoTensor(input, [=](auto& sample) { return sample.output.grid; });
 
+        std::cout << initialStates.sizes() << std::endl;
+        std::cout << actions.sizes() << std::endl;
+    	
         torch::Tensor currentValues = Forward(initialStates).gather(1, actions); // todo brendan this forward should be on the policy net we are optimizing
     	torch::Tensor nextValues = std::get<0>(Forward(nextStates).max(1)); // todo brendan this forward should be on the target net, not this policy
         torch::Tensor expectedValues = (nextValues * discount) + rewards;

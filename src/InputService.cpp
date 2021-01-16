@@ -61,11 +61,11 @@ void InputService::HandleInput()
                     PlayerEntity* oldPlayer;
                     if (activePlayer.TryGetValue(oldPlayer))
                     {
-                        oldPlayer->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::Deciding;
+                        oldPlayer->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::ReinforcementLearning;
                     }
 
                     activePlayer = player;
-                    player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::CollectingSamples;
+                    player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::ReinforcementLearning;
 
                     scene->GetCameraFollower()->FollowEntity(player);
 

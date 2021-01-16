@@ -81,17 +81,27 @@ void PlayerEntity::OnAdded()
     {
         auto nn = AddComponent<NeuralNetworkComponent<DeepQNetwork>>();
         nn->SetNetwork("nn");
-    	nn->mode = NeuralNetworkMode::Deciding;
+    	nn->mode = NeuralNetworkMode::ReinforcementLearning;
 
         auto gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
-        gridSensor->Read(previousInputState);
+
+    	InitialState state;
+    	previousInputState = &state;
+        gridSensor->Read(previousInputState->grid);
     	
         // Called when:
         //  * Collecting input to make a decision
         //  * Adding a training sample
         nn->collectInput = [=](InitialState& input)
         {
-            gridSensor->Read(previousInputState);
+            gridSensor->Read(input.grid);
+        	previousInputState = &input; // todo brendan is this right?
+        };
+
+    	nn->collectPreviousInput = [=]()
+        {
+    		// todo brendan is this right?
+    		return previousInputState;
         };
 
         // Called when the decider makes a decision
@@ -106,7 +116,7 @@ void PlayerEntity::OnAdded()
         {
         	gridSensor->Read(outDecision.grid);
         	outDecision.reward = 0.0f; // todo brendan reward
-            outDecision.actionIndex = static_cast<int>(lastDirection);
+            outDecision.actionIndex = static_cast<int>(lastDirection); // todo brendan make this handle all actions
         };
     }
 }

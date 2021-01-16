@@ -52,7 +52,7 @@ DEFINE_ENTITY(PlayerEntity, "player")
     float attackCoolDown = 0;
     int playerId;
     MoveDirection lastDirection = MoveDirection::None;
-	GridSensorOutput<GridSize, GridSize> previousInputState;
+	InitialState* previousInputState;
 
     void Die(const OutOfHealthEvent* outOfHealth);
 };
