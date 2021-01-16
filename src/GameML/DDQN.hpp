@@ -66,21 +66,25 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
     void TrainBatch(Grid<const SampleType> input, StrifeML::TrainingBatchResult& outResult) override
     {
         torch::Tensor initialStates = PackIntoTensor(input, [=](auto& sample) { return sample.input.grid; });
-        torch::Tensor actions = PackIntoTensor(input, [=](auto& sample) { return static_cast<int64_t>(sample.output.actionIndex); }).squeeze();
+        torch::Tensor actions = PackIntoTensor(input, [=](auto& sample) { return static_cast<int64_t>(sample.output.actionIndex); });
         torch::Tensor rewards = PackIntoTensor(input, [=](auto& sample) { return static_cast<float_t>(sample.output.reward); }).squeeze();
     	torch::Tensor nextStates = PackIntoTensor(input, [=](auto& sample) { return sample.output.grid; });
 
-        std::cout << initialStates.sizes() << std::endl;
-        std::cout << actions.sizes() << std::endl;
-    	
-        torch::Tensor currentValues = Forward(initialStates).gather(1, actions); // todo brendan this forward should be on the policy net we are optimizing
+        //std::cout << initialStates.sizes() << std::endl;
+        //std::cout << actions.sizes() << std::endl;
+
+        auto forward = Forward(initialStates);
+        //std::cout << forward.sizes() << std::endl;
+
+    	//std::cout << actions << std::endl;
+        torch::Tensor currentValues = forward.gather(1, actions); // todo brendan this forward should be on the policy net we are optimizing
     	torch::Tensor nextValues = std::get<0>(Forward(nextStates).max(1)); // todo brendan this forward should be on the target net, not this policy
         torch::Tensor expectedValues = (nextValues * discount) + rewards;
 
         //std::cout << currentValues.sizes() << std::endl;
         //std::cout << expectedValues.sizes() << std::endl;
 
-        torch::Tensor loss = torch::nn::functional::smooth_l1_loss(currentValues, expectedValues);
+        torch::Tensor loss = torch::nn::functional::smooth_l1_loss(currentValues.squeeze(), expectedValues);
 
     	optimizer->zero_grad();
         loss.backward();

@@ -84,10 +84,7 @@ void PlayerEntity::OnAdded()
     	nn->mode = NeuralNetworkMode::ReinforcementLearning;
 
         auto gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
-
-    	InitialState state;
-    	previousInputState = &state;
-        gridSensor->Read(previousInputState->grid);
+        gridSensor->Read(previousInputState.grid);
     	
         // Called when:
         //  * Collecting input to make a decision
@@ -95,7 +92,7 @@ void PlayerEntity::OnAdded()
         nn->collectInput = [=](InitialState& input)
         {
             gridSensor->Read(input.grid);
-        	previousInputState = &input; // todo brendan is this right?
+        	previousInputState = input; // todo brendan is this right?
         };
 
     	nn->collectPreviousInput = [=]()
