@@ -55,7 +55,7 @@ struct Game : IGame
         // Create networks
         {
             auto decider = neuralNetworkManager->CreateDecider<DQNDecider>();
-            auto trainer = neuralNetworkManager->CreateTrainer<DQNTrainer>(engine->GetMetricsManager()->GetOrCreateMetric("loss"));
+            auto trainer = neuralNetworkManager->CreateTrainer<DQNTrainer>(engine->GetMetricsManager()->GetOrCreateMetric("loss"), 10);
 
             neuralNetworkManager->CreateNetwork("nn", decider, trainer);
         }

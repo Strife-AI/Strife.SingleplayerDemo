@@ -43,7 +43,9 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
     torch::nn::Conv2d conv1{ nullptr }, conv2{ nullptr }, conv3{ nullptr }, conv4{ nullptr };
     torch::nn::Linear dense{ nullptr };
     std::shared_ptr<torch::optim::Adam> optimizer;
-
+	
+    std::shared_ptr<DeepQNetwork> targetNetwork;
+	
     DeepQNetwork()
     {
         auto totalObservables = 3;
@@ -70,15 +72,15 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
         torch::Tensor rewards = PackIntoTensor(input, [=](auto& sample) { return static_cast<float_t>(sample.output.reward); }).squeeze();
     	torch::Tensor nextStates = PackIntoTensor(input, [=](auto& sample) { return sample.output.grid; });
 
-        //std::cout << initialStates.sizes() << std::endl;
+    	//std::cout << initialStates.sizes() << std::endl;
         //std::cout << actions.sizes() << std::endl;
-
+        
         auto forward = Forward(initialStates);
         //std::cout << forward.sizes() << std::endl;
 
     	//std::cout << actions << std::endl;
-        torch::Tensor currentValues = forward.gather(1, actions); // todo brendan this forward should be on the policy net we are optimizing
-    	torch::Tensor nextValues = std::get<0>(Forward(nextStates).max(1)); // todo brendan this forward should be on the target net, not this policy
+        torch::Tensor currentValues = forward.gather(1, actions);
+    	torch::Tensor nextValues = std::get<0>(targetNetwork->Forward(nextStates).max(1));
         torch::Tensor expectedValues = (nextValues * discount) + rewards;
 
         //std::cout << currentValues.sizes() << std::endl;
@@ -89,7 +91,7 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
     	optimizer->zero_grad();
         loss.backward();
         optimizer->step();
-
+ 	
         outResult.loss = loss.item<float>();
     }
 
@@ -164,10 +166,12 @@ struct DQNDecider : StrifeML::Decider<DeepQNetwork>
 
 struct DQNTrainer : StrifeML::Trainer<DeepQNetwork>
 {
-    DQNTrainer(Metric* lossMetric)
+    DQNTrainer(Metric* lossMetric, int targetUpdatePeriod)
         : Trainer<DeepQNetwork>(32, 10000),
-          lossMetric(lossMetric)
+          lossMetric(lossMetric),
+		  targetUpdatePeriod(targetUpdatePeriod)
     {
+    	network->targetNetwork = std::make_shared<DeepQNetwork>();
         LogStartup();
         samples = sampleRepository.CreateSampleSet("player-samples");
         samplesByActionType = samples
@@ -199,10 +203,19 @@ struct DQNTrainer : StrifeML::Trainer<DeepQNetwork>
 
     void OnTrainingComplete(const StrifeML::TrainingBatchResult& result) override
     {
+    	++trainingCount;
+    	if (trainingCount % targetUpdatePeriod == 0)
+    	{
+    		std::stringstream stream;
+    		torch::save(network, stream);
+    		torch::load(network->targetNetwork, stream);
+    	}
         lossMetric->Add(result.loss);
     }
 
     StrifeML::SampleSet<SampleType>* samples;
     StrifeML::GroupedSampleView<SampleType, int>* samplesByActionType;
     Metric* lossMetric;
+	int trainingCount = 0;
+	int targetUpdatePeriod;
 };
