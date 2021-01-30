@@ -37,7 +37,7 @@ struct Transition : StrifeML::ISerializable
 
 struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 {
-	float discount = 0.9f; // gamma
+	float discount = 0.999f; // gamma
 	
     torch::nn::Embedding embedding{ nullptr };
     torch::nn::Conv2d conv1{ nullptr }, conv2{ nullptr }, conv3{ nullptr }, conv4{ nullptr };
@@ -83,7 +83,7 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
     	torch::Tensor nextValues = std::get<0>(targetNetwork->Forward(nextStates).max(1));
         torch::Tensor expectedValues = (nextValues * discount) + rewards;
 
-        //std::cout << currentValues.sizes() << std::endl;
+        //std::cout << rewards << std::endl;
         //std::cout << expectedValues.sizes() << std::endl;
 
         torch::Tensor loss = torch::nn::functional::smooth_l1_loss(currentValues.squeeze(), expectedValues);

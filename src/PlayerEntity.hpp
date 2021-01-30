@@ -52,6 +52,7 @@ DEFINE_ENTITY(PlayerEntity, "player")
     float attackCoolDown = 0;
     int playerId;
     MoveDirection lastDirection = MoveDirection::None;
+	int lastDirectionIndex = 0; // todo brendan redundant hack with lastDirection
 
     void Die(const OutOfHealthEvent* outOfHealth);
 };

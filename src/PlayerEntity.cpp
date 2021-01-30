@@ -79,12 +79,13 @@ void PlayerEntity::OnAdded()
 
 	// Setup network and sensors
     {
-        auto nn = AddComponent<NeuralNetworkComponent<DeepQNetwork>>();
+        auto nn = AddComponent<NeuralNetworkComponent<DeepQNetwork>>(10);
         nn->SetNetwork("nn");
     	nn->mode = NeuralNetworkMode::ReinforcementLearning;
 
         auto gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
-            	
+    	gridSensor->render = true;
+    	    	            	
         // Called when:
         //  * Collecting input to make a decision
         //  * Adding a training sample
@@ -96,6 +97,7 @@ void PlayerEntity::OnAdded()
         // Called when the decider makes a decision
         nn->receiveDecision = [=](Transition& decision)
         {
+        	lastDirectionIndex = decision.actionIndex;
             SetMoveDirection(MoveDirectionToVector2(static_cast<MoveDirection>(decision.actionIndex)) * 200);
         };
 
@@ -104,8 +106,17 @@ void PlayerEntity::OnAdded()
         nn->collectDecision = [=](Transition& outDecision)
         {
         	gridSensor->Read(outDecision.grid); // todo brendan I think we are reading the sensor input twice in a row essentially
-        	outDecision.reward = 0.0f; // todo brendan reward
-            outDecision.actionIndex = static_cast<int>(lastDirection); // todo brendan make this handle all actions
+
+            if (lastDirectionIndex == static_cast<int>(MoveDirection::East))
+            {
+	            outDecision.reward = 1.0f;
+            }
+            else
+            {
+            	outDecision.reward = -1.0f;
+            }
+        	
+            outDecision.actionIndex = lastDirectionIndex;
         };
     }
 }
@@ -144,7 +155,7 @@ void PlayerEntity::OnDestroyed()
 void PlayerEntity::Render(Renderer* renderer)
 {
     auto position = Center();
-
+	
     // Render player
     {
         Color c[5] = {

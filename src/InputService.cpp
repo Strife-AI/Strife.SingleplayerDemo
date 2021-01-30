@@ -23,7 +23,7 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
     if (ev.Is<SceneLoadedEvent>())
     {
         SpawnPlayer(Vector2(950, 950), 0);
-        SpawnPlayer(Vector2(2000, 950), 1);
+        //SpawnPlayer(Vector2(2000, 950), 1);
     }
     if (ev.Is<UpdateEvent>())
     {
@@ -126,7 +126,7 @@ void InputService::SpawnPlayer(Vector2 position, int playerId)
     auto spawn = scene->CreateEntity<CastleEntity>(position);
     spawn->playerId = playerId;
 
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 2; ++i)
     {
         spawn->SpawnPlayer();
     }
