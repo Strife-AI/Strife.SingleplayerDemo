@@ -176,7 +176,8 @@ struct DQNTrainer : StrifeML::Trainer<DeepQNetwork>
         samples = sampleRepository.CreateSampleSet("player-samples");
         samplesByActionType = samples
             ->CreateGroupedView<int>()
-            ->GroupBy([=](const SampleType& sample) { return sample.output.actionIndex; });
+            //->GroupBy([=](const SampleType& sample) { return sample.output.actionIndex; });
+            ->GroupBy([=](const SampleType& sample) { return 0; });// todo brendan hacky 1 group
     }
 
     void LogStartup() const
