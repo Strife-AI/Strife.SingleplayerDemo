@@ -1,8 +1,10 @@
 #include <SDL2/SDL.h>
 
 #include "Engine.hpp"
+#include "GoalEntity.hpp"
 #include "InputService.hpp"
 #include "PlayerEntity.hpp"
+#include "PuckEntity.hpp"
 #include "GameML/DDQN.hpp"
 #include "Net/NetworkPhysics.hpp"
 #include "Scene/IGame.hpp"
@@ -19,15 +21,15 @@ struct Game : IGame
     {
         config
             .SetDefaultScene("erebor"_sid)
-            .SetWindowCaption("Breakout")
-            .SetGameName("breakout")
+            .SetWindowCaption("Soccer")
+            .SetGameName("soccer")
             .ExecuteUserConfig("user.cfg")
             .EnableDevConsole("console-font");
 
         auto resourceManager = ResourceManager::GetInstance();
         resourceManager->SetBaseAssetPath("../assets");
         resourceManager->LoadResourceFromFile("Sprites/castle.png", "castle");
-        resourceManager->LoadResourceFromFile("Tilemaps/Erebor.tmx", "erebor");
+        resourceManager->LoadResourceFromFile("Tilemaps/Soccer.tmx", "soccer");
         resourceManager->LoadResourceFromFile("Sprites/Spritesheets/font.png", "console-font", ".sfnt");
     }
 
@@ -47,7 +49,7 @@ struct Game : IGame
 
     void OnGameStart() override
     {
-        auto map = "erebor";
+        auto map = "soccer";
         auto engine = GetEngine();
 
         auto neuralNetworkManager = engine->GetNeuralNetworkManager();
@@ -63,8 +65,10 @@ struct Game : IGame
         // Add types of objects the sensors can pick up
         {
             SensorObjectDefinition sensorDefinition;
-            sensorDefinition.Add<PlayerEntity>(1).SetColor(Color::Red()).SetPriority(1);
-            sensorDefinition.Add<TilemapEntity>(2).SetColor(Color::Gray()).SetPriority(0);
+            sensorDefinition.Add<PuckEntity>(1).SetColor(Color::Red()).SetPriority(3);
+            sensorDefinition.Add<GoalEntity>(2).SetColor(Color::Blue()).SetPriority(2);
+            sensorDefinition.Add<PlayerEntity>(3).SetColor(Color::Green()).SetPriority(1);
+            sensorDefinition.Add<TilemapEntity>(4).SetColor(Color::Gray()).SetPriority(0);
 
             neuralNetworkManager->SetSensorObjectDefinition(sensorDefinition);
         }

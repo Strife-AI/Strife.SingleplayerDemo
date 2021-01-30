@@ -29,6 +29,22 @@ enum class MoveDirection
     TotalDirections
 };
 
+enum class RewardType
+{
+	None,
+    ScoreGoal
+};
+
+DEFINE_EVENT(RewardEvent)
+{
+    RewardEvent(RewardType rewardType)
+        : rewardType(rewardType)
+    {
+    }
+
+    RewardType rewardType;
+};
+
 DEFINE_ENTITY(PlayerEntity, "player")
 {
     using NeuralNetwork = NeuralNetworkComponent<DeepQNetwork>;
@@ -53,6 +69,7 @@ DEFINE_ENTITY(PlayerEntity, "player")
     int playerId;
     MoveDirection lastDirection = MoveDirection::None;
 	int lastDirectionIndex = 0; // todo brendan redundant hack with lastDirection
+	float currentReward = 0;
 
     void Die(const OutOfHealthEvent* outOfHealth);
 };

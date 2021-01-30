@@ -48,7 +48,7 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 	
     DeepQNetwork()
     {
-        auto totalObservables = 3;
+        auto totalObservables = 5;
     	auto embeddingSize = 4;
     	auto totalActions = 9;
     	

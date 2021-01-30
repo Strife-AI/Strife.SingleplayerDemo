@@ -2,15 +2,11 @@
 #include "InputService.hpp"
 #include "Engine.hpp"
 #include "PuckEntity.hpp"
-#include "Components/RigidBodyComponent.hpp"
 #include "Memory/Util.hpp"
-#include "Net/NetworkPhysics.hpp"
 #include "Net/ReplicationManager.hpp"
-#include "Physics/PathFinding.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Tools/Console.hpp"
-
-#include "CastleEntity.hpp"
+#include "GoalEntity.hpp"
 
 InputButton g_quit = InputButton(SDL_SCANCODE_ESCAPE);
 InputButton g_upButton(SDL_SCANCODE_W);
@@ -20,11 +16,19 @@ InputButton g_rightButton(SDL_SCANCODE_D);
 
 void InputService::ReceiveEvent(const IEntityEvent& ev)
 {
-    if (ev.Is<SceneLoadedEvent>())
-    {
-        SpawnPlayer(Vector2(950, 950), 0);
-        //SpawnPlayer(Vector2(2000, 950), 1);
-    }
+	if (ev.Is<SceneLoadedEvent>())
+	{
+		scene->CreateEntity<GoalEntity>(Vector2(320, 200));
+		
+		auto player = scene->CreateEntity<PlayerEntity>(Vector2(320, 320));
+		player->playerId = 0;
+		scene->GetCameraFollower()->FollowEntity(player);
+
+		auto position = Vector2(400, 400);
+        auto puck = scene->CreateEntity<PuckEntity>(position);
+		puck->spawn = position;
+		puck->player = player;
+	}
     if (ev.Is<UpdateEvent>())
     {
         HandleInput();
@@ -119,22 +123,4 @@ MoveDirection InputService::GetInputDirection()
     if (g_downButton.IsDown()) ++inputDir.y;
 
     return GetClosestMoveDirection(inputDir);
-}
-
-void InputService::SpawnPlayer(Vector2 position, int playerId)
-{
-    auto spawn = scene->CreateEntity<CastleEntity>(position);
-    spawn->playerId = playerId;
-
-    for (int i = 0; i < 2; ++i)
-    {
-        spawn->SpawnPlayer();
-    }
-
-    spawns.push_back(spawn);
-
-    if (playerId == 0)
-    {
-        scene->GetCameraFollower()->CenterOn(position);
-    }
 }

@@ -14,7 +14,7 @@ add_executable(SingleplayerDemo
 	"HealthBarComponent.hpp"
 	"FireballEntity.cpp"
 	"FireballEntity.hpp"
- "GameML/DDQN.hpp")
+ "GameML/DDQN.hpp" "GoalEntity.hpp" "GoalEntity.cpp")
 
 find_package(torch REQUIRED)
 

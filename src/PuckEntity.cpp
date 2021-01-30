@@ -1,36 +1,19 @@
 #include "PuckEntity.hpp"
 
-
-#include "Engine.hpp"
-#include "Components/NetComponent.hpp"
-#include "Components/RigidBodyComponent.hpp"
-#include "Math/Random.hpp"
+#include "GoalEntity.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Scene/IEntityEvent.hpp"
 
 void PuckEntity::OnAdded()
 {
-    auto rb = AddComponent<RigidBodyComponent>(b2_dynamicBody);
-    auto box = rb->CreateBoxCollider(Dimensions());
+	SetDimensions({ 30, 30 });
+    rigidBody = AddComponent<RigidBodyComponent>(b2_dynamicBody);
+    auto box = rigidBody->CreateBoxCollider(Dimensions());
 
     box->SetFriction(1);
-
-    if(!scene->isServer)
-    {
-        //rb->body->SetType(b2_kinematicBody);
-    }
-    else
-    {
-        
-    }
-
     box->SetRestitution(1);
-    box->SetFriction(1);
     box->SetDensity(10);
-    rb->body->ResetMassData();
-
-    AddComponent<NetComponent>();
-
-    //ChangeDirection();
+    rigidBody->body->ResetMassData();
 }
 
 void PuckEntity::Render(Renderer* renderer)
@@ -38,9 +21,15 @@ void PuckEntity::Render(Renderer* renderer)
     renderer->RenderRectangle(Bounds(), Color::Red(), -1);
 }
 
-void PuckEntity::ChangeDirection()
+void PuckEntity::ReceiveEvent(const IEntityEvent& ev)
 {
-    auto rb = GetComponent<RigidBodyComponent>();
-    rb->SetVelocity(Rand({ -1, -1 }, { 1, 1 }) * 100);
-    StartTimer(5, [=] { ChangeDirection(); });
+	if (auto contact = ev.Is<ContactBeginEvent>())
+	{
+		if (contact->OtherIs<GoalEntity>())
+		{
+			//player->SendEvent(RewardEvent(RewardType::ScoreGoal));
+			rigidBody->SetVelocity({ 0, 0 });
+			SetCenter(spawn);
+		}
+	}
 }

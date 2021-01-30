@@ -107,14 +107,8 @@ void PlayerEntity::OnAdded()
         {
         	gridSensor->Read(outDecision.grid); // todo brendan I think we are reading the sensor input twice in a row essentially
 
-            if (lastDirectionIndex == static_cast<int>(MoveDirection::East))
-            {
-	            outDecision.reward = 1.0f;
-            }
-            else
-            {
-            	outDecision.reward = -1.0f;
-            }
+        	outDecision.reward = currentReward;
+            currentReward = 0;
         	
             outDecision.actionIndex = lastDirectionIndex;
         };
@@ -126,6 +120,18 @@ void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
     if (auto outOfHealth = ev.Is<OutOfHealthEvent>())
     {
         Die(outOfHealth);
+    }
+
+    if (auto reward = ev.Is<RewardEvent>())
+    {
+	    switch (reward->rewardType)
+	    {
+	    case RewardType::ScoreGoal:
+		    currentReward += 1.0f;
+		    break;
+	    case RewardType::None:
+		    currentReward -= 0.001f;
+	    }
     }
 }
 
