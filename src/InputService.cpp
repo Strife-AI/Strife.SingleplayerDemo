@@ -39,6 +39,7 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
     }
 }
 
+// todo brendan clicking the bot should change its mode to receive data only, not try to control the player too
 void InputService::HandleInput()
 {
     if (g_quit.IsPressed())
@@ -57,25 +58,28 @@ void InputService::HandleInput()
 
         if (mouse->LeftPressed())
         {
+        	bool playerAssigned = false;
             for (auto player : players)
             {
                 if (player->Bounds().ContainsPoint(scene->GetCamera()->ScreenToWorld(mouse->MousePosition()))
                     && player->playerId == 0)
                 {
-                    PlayerEntity* oldPlayer;
-                    if (activePlayer.TryGetValue(oldPlayer))
-                    {
-                        oldPlayer->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::ReinforcementLearning;
-                    }
+                    ReleaseActivePlayer();
 
                     activePlayer = player;
-                    player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::ReinforcementLearning;
+                    player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::CollectingSamples;
 
                     scene->GetCameraFollower()->FollowEntity(player);
+                	playerAssigned = true;
 
                     break;
                 }
             }
+
+        	if (!playerAssigned)
+        	{
+                ReleaseActivePlayer();
+        	}
         }
 
         PlayerEntity* self;
@@ -103,6 +107,16 @@ void InputService::HandleInput()
             }
         }
     }
+}
+
+void InputService::ReleaseActivePlayer()
+{
+	PlayerEntity* player;
+	if (activePlayer.TryGetValue(player))
+	{
+		player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::ReinforcementLearning;
+		activePlayer.Invalidate();
+	}
 }
 
 void InputService::Render(Renderer* renderer)

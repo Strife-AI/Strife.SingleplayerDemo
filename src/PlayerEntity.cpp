@@ -84,7 +84,7 @@ void PlayerEntity::OnAdded()
     	nn->mode = NeuralNetworkMode::ReinforcementLearning;
 
         auto gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
-    	gridSensor->render = true;
+    	//gridSensor->render = true;
     	    	            	
         // Called when:
         //  * Collecting input to make a decision
