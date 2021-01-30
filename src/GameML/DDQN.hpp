@@ -45,6 +45,7 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
     std::shared_ptr<torch::optim::Adam> optimizer;
 	
     std::shared_ptr<DeepQNetwork> targetNetwork;
+	torch::Device device = torch::Device(torch::kCPU);
 	
     DeepQNetwork()
     {
@@ -67,10 +68,10 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 	// todo brendan can we move this function back to the trainer?
     void TrainBatch(Grid<const SampleType> input, StrifeML::TrainingBatchResult& outResult) override
     {
-        torch::Tensor initialStates = PackIntoTensor(input, [=](auto& sample) { return sample.input.grid; });
-        torch::Tensor actions = PackIntoTensor(input, [=](auto& sample) { return static_cast<int64_t>(sample.output.actionIndex); });
-        torch::Tensor rewards = PackIntoTensor(input, [=](auto& sample) { return static_cast<float_t>(sample.output.reward); }).squeeze();
-    	torch::Tensor nextStates = PackIntoTensor(input, [=](auto& sample) { return sample.output.grid; });
+        torch::Tensor initialStates = PackIntoTensor(input, [=](auto& sample) { return sample.input.grid; }).to(device);
+        torch::Tensor actions = PackIntoTensor(input, [=](auto& sample) { return static_cast<int64_t>(sample.output.actionIndex); }).to(device);
+        torch::Tensor rewards = PackIntoTensor(input, [=](auto& sample) { return static_cast<float_t>(sample.output.reward); }).squeeze().to(device);
+    	torch::Tensor nextStates = PackIntoTensor(input, [=](auto& sample) { return sample.output.grid; }).to(device);
 
     	//std::cout << initialStates.sizes() << std::endl;
         //std::cout << actions.sizes() << std::endl;
@@ -98,6 +99,8 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 	// todo brendan can we move this function back to the decider?
     void MakeDecision(Grid<const InputType> input, OutputType& output) override
     {
+        SetDevice(torch::kCPU);
+
         auto spatialInput = PackIntoTensor(input, [=](auto& sample) { return sample.grid; });
         torch::Tensor action = Forward(spatialInput);
         torch::Tensor index = std::get<1>(torch::max(action, 0));
@@ -157,6 +160,12 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 
         return x.squeeze();
     }
+
+	void SetDevice(torch::DeviceType deviceType)
+    {
+	    device = torch::Device(deviceType);
+    	to(device);
+    }
 };
 
 struct DQNDecider : StrifeML::Decider<DeepQNetwork>
@@ -172,6 +181,9 @@ struct DQNTrainer : StrifeML::Trainer<DeepQNetwork>
 		  targetUpdatePeriod(targetUpdatePeriod)
     {
     	network->targetNetwork = std::make_shared<DeepQNetwork>();
+        network->SetDevice(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
+    	network->targetNetwork->SetDevice(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
+    	
         LogStartup();
         samples = sampleRepository.CreateSampleSet("player-samples");
         samplesByActionType = samples
