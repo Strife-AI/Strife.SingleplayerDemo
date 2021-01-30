@@ -27,9 +27,13 @@ void PuckEntity::ReceiveEvent(const IEntityEvent& ev)
 	{
 		if (contact->OtherIs<GoalEntity>())
 		{
-			//player->SendEvent(RewardEvent(RewardType::ScoreGoal));
+			player->SendEvent(RewardEvent(RewardType::ScoreGoal));
 			rigidBody->SetVelocity({ 0, 0 });
-			SetCenter(spawn);
+
+			StartTimer(0, [=]
+			{
+				SetCenter(spawn);
+			});
 		}
 	}
 }

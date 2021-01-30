@@ -101,14 +101,13 @@ void PlayerEntity::OnAdded()
             SetMoveDirection(MoveDirectionToVector2(static_cast<MoveDirection>(decision.actionIndex)) * 200);
         };
 
-    	// todo brendan make a decision for every single bot
-        // Collects what decision the player made
+        // Collects what decision/state the player made
         nn->collectDecision = [=](Transition& outDecision)
         {
         	gridSensor->Read(outDecision.grid); // todo brendan I think we are reading the sensor input twice in a row essentially
 
         	outDecision.reward = currentReward;
-            currentReward = 0;
+            currentReward = -0.001f;
         	
             outDecision.actionIndex = lastDirectionIndex;
         };
@@ -127,7 +126,7 @@ void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
 	    switch (reward->rewardType)
 	    {
 	    case RewardType::ScoreGoal:
-		    currentReward += 1.0f;
+		    currentReward = 1.0f;
 		    break;
 	    case RewardType::None:
 		    currentReward -= 0.001f;

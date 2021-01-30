@@ -83,7 +83,7 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
     	torch::Tensor nextValues = std::get<0>(targetNetwork->Forward(nextStates).max(1));
         torch::Tensor expectedValues = (nextValues * discount) + rewards;
 
-        //std::cout << rewards << std::endl;
+        std::cout << rewards << std::endl;
         //std::cout << expectedValues.sizes() << std::endl;
 
         torch::Tensor loss = torch::nn::functional::smooth_l1_loss(currentValues.squeeze(), expectedValues);

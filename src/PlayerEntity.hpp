@@ -69,7 +69,7 @@ DEFINE_ENTITY(PlayerEntity, "player")
     int playerId;
     MoveDirection lastDirection = MoveDirection::None;
 	int lastDirectionIndex = 0; // todo brendan redundant hack with lastDirection
-	float currentReward = 0;
+	float currentReward = -0.001f;
 
     void Die(const OutOfHealthEvent* outOfHealth);
 };
