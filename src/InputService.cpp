@@ -24,10 +24,10 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
 		player->playerId = 0;
 		scene->GetCameraFollower()->FollowEntity(player);
 
-		auto position = Vector2(400, 400);
-        auto puck = scene->CreateEntity<PuckEntity>(position);
-		puck->spawn = position;
-		puck->player = player;
+		//auto position = Vector2(400, 400);
+  //      auto puck = scene->CreateEntity<PuckEntity>(position);
+		//puck->spawn = position;
+		//puck->player = player;
 	}
     if (ev.Is<UpdateEvent>())
     {

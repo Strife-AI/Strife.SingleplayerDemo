@@ -9,6 +9,7 @@
 
 #include "CastleEntity.hpp"
 #include "FireballEntity.hpp"
+#include "GoalEntity.hpp"
 
 Vector2 MoveDirectionToVector2(MoveDirection direction)
 {
@@ -120,6 +121,18 @@ void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
     {
         Die(outOfHealth);
     }
+
+	if (auto contact = ev.Is<ContactBeginEvent>())
+	{
+		if (contact->OtherIs<GoalEntity>())
+		{
+			currentReward = 1.0f;
+			StartTimer(0, [=]
+			{
+				SetCenter(Vector2(320, 320));
+			});
+		}
+	}
 
     if (auto reward = ev.Is<RewardEvent>())
     {
