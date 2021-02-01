@@ -26,7 +26,8 @@ struct Transition : StrifeML::ISerializable
 		serializer
 			.Add(actionIndex)
 			.Add(reward)
-			.Add(grid);
+			.Add(grid)
+			.Add(isFinalState);
 	}
 
 	int actionIndex;
@@ -66,32 +67,23 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
         }
     	
         dense = register_module("dense", torch::nn::Linear(convChannels, totalActions));
-        optimizer = std::make_shared<torch::optim::Adam>(parameters(), 1e-5);
+        optimizer = std::make_shared<torch::optim::Adam>(parameters(), 1e-6);
     }
 
-	// todo brendan can we move this function back to the trainer?
     void TrainBatch(Grid<const SampleType> input, StrifeML::TrainingBatchResult& outResult) override
     {
         torch::Tensor initialStates = PackIntoTensor(input, [=](auto& sample) { return sample.input.grid; }).to(device);
         torch::Tensor actions = PackIntoTensor(input, [=](auto& sample) { return static_cast<int64_t>(sample.output.actionIndex); }).to(device);
         torch::Tensor rewards = PackIntoTensor(input, [=](auto& sample) { return static_cast<float_t>(sample.output.reward); }).squeeze().to(device);
     	torch::Tensor nextStates = PackIntoTensor(input, [=](auto& sample) { return sample.output.grid; }).to(device);
-
-    	//std::cout << initialStates.sizes() << std::endl;
-        //std::cout << actions.sizes() << std::endl;
+    	torch::Tensor nextStateMask = PackIntoTensor(input, [=](auto& sample) { return sample.output.isFinalState ? 0 : 1; }).squeeze().to(device);
         
         auto forward = Forward(initialStates);
-        //std::cout << forward.sizes() << std::endl;
-
-    	//std::cout << actions << std::endl;
-        torch::Tensor currentValues = forward.gather(1, actions);
+    	torch::Tensor currentValues = forward.gather(1, actions);
     	torch::Tensor nextValues = std::get<0>(targetNetwork->Forward(nextStates).max(1));
-        torch::Tensor expectedValues = (nextValues * discount) + rewards;
+        torch::Tensor expectedValues = (nextValues * nextStateMask * discount) + rewards;
 
-        //std::cout << rewards << std::endl;
-        //std::cout << expectedValues.sizes() << std::endl;
-
-        torch::Tensor loss = torch::nn::functional::smooth_l1_loss(currentValues.squeeze(), expectedValues);
+        torch::Tensor loss = torch::nn::functional::smooth_l1_loss(currentValues, expectedValues.unsqueeze(1));
 
     	optimizer->zero_grad();
         loss.backward();
@@ -105,7 +97,6 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
         outResult.loss = loss.item<float>();
     }
 
-	// todo brendan can we move this function back to the decider?
     void MakeDecision(Grid<const InputType> input, OutputType& output) override
     {
         SetDevice(torch::kCPU);
@@ -113,7 +104,7 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
         auto spatialInput = PackIntoTensor(input, [=](auto& sample) { return sample.grid; });
         torch::Tensor action = Forward(spatialInput);
         torch::Tensor index = std::get<1>(torch::max(action, 0));
-        int maxIndex = *index.data_ptr<int64_t>();
+    	int maxIndex = *index.data_ptr<int64_t>();
         output.actionIndex = maxIndex;
     }
 
@@ -146,7 +137,7 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 	        	bool lastLayer = i == LayerCount - 1;
 		        x = conv[i]->forward(x);
 	        	
-	            if (!lastLayer)
+	            if (!lastLayer && batchSize > 1)
 	            {
 		            x = batchNorm[i]->forward(x);
 	            }

@@ -10,6 +10,7 @@
 #include "CastleEntity.hpp"
 #include "FireballEntity.hpp"
 #include "GoalEntity.hpp"
+#include "Math/Random.hpp"
 
 Vector2 MoveDirectionToVector2(MoveDirection direction)
 {
@@ -84,8 +85,8 @@ void PlayerEntity::OnAdded()
         nn->SetNetwork("nn");
     	nn->mode = NeuralNetworkMode::ReinforcementLearning;
 
-        auto gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
-    	//gridSensor->render = true;
+        auto gridSensor = AddComponent<GridSensorComponent<GridSize, GridSize>>(Vector2(16, 16));
+    	gridSensor->render = true;
     	    	            	
         // Called when:
         //  * Collecting input to make a decision
@@ -98,6 +99,10 @@ void PlayerEntity::OnAdded()
         // Called when the decider makes a decision
         nn->receiveDecision = [=](Transition& decision)
         {
+        	if (scene->GetService<InputService>()->activePlayer.GetValueOrNull() == this)
+        	{
+        		return;
+        	}
         	lastDirectionIndex = decision.actionIndex;
             SetMoveDirection(MoveDirectionToVector2(static_cast<MoveDirection>(decision.actionIndex)) * 200);
         };
@@ -108,9 +113,14 @@ void PlayerEntity::OnAdded()
         	gridSensor->Read(outDecision.grid); // todo brendan I think we are reading the sensor input twice in a row essentially
 
         	outDecision.reward = currentReward;
-            currentReward = -0.001f;
-        	
-            outDecision.actionIndex = lastDirectionIndex;
+        	outDecision.isFinalState = IsApproximately(currentReward, 1);
+        	currentReward = -0.001f;
+        	outDecision.actionIndex = lastDirectionIndex;
+
+            if (outDecision.isFinalState)
+            {
+	            SetCenter(Rand(Vector2(150), Vector2(600)));
+            }
         };
     }
 }
@@ -127,10 +137,11 @@ void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
 		if (contact->OtherIs<GoalEntity>())
 		{
 			currentReward = 1.0f;
-			StartTimer(0, [=]
-			{
-				SetCenter(Vector2(320, 320));
-			});
+			//StartTimer(0.05f, [=]
+			//{
+			//	std::cout << "Jumping" << std::endl;
+			//	SetCenter(Rand(Vector2(150), Vector2(600)));
+			//});
 		}
 	}
 

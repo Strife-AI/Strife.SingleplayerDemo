@@ -2,6 +2,7 @@
 
 #include "PuckEntity.hpp"
 #include "Components/RigidBodyComponent.hpp"
+#include "Math/Random.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Scene/IEntityEvent.hpp"
 
@@ -21,9 +22,12 @@ void GoalEntity::ReceiveEvent(const IEntityEvent& ev)
 {
 	if (auto contact = ev.Is<ContactBeginEvent>())
 	{
-		if (contact->OtherIs<PuckEntity>())
+		if (contact->OtherIs<PlayerEntity>())
 		{
-			// do nothing for now
+			//StartTimer(0.05f, [=]
+			//{
+			//	SetCenter(Rand(Vector2(150), Vector2(600)));
+			//});
 		}
 	}
 }

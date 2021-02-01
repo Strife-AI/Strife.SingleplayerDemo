@@ -67,7 +67,6 @@ void InputService::HandleInput()
                     ReleaseActivePlayer();
 
                     activePlayer = player;
-                    player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::CollectingSamples;
 
                     scene->GetCameraFollower()->FollowEntity(player);
                 	playerAssigned = true;
