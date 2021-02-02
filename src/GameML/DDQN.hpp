@@ -38,7 +38,7 @@ struct Transition : StrifeML::ISerializable
 
 struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 {
-	float discount = 0.999f; // gamma
+	float discount = 0.99f; // gamma
 	const static int LayerCount = 4;
 	
     torch::nn::Embedding embedding{ nullptr };
@@ -49,13 +49,14 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
 	
     std::shared_ptr<DeepQNetwork> targetNetwork;
 	torch::Device device = torch::Device(torch::kCPU);
+
+	const static int TotalActions = 9;
 	
     DeepQNetwork()
     {
         auto totalObservables = 5;
     	auto embeddingSize = 4;
-    	auto totalActions = 9;
-    	
+    	    	
         embedding = register_module("embedding", torch::nn::Embedding(totalObservables, embeddingSize));
 
     	int convChannels = embeddingSize;
@@ -66,8 +67,8 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
         	convChannels *= 2;
         }
     	
-        dense = register_module("dense", torch::nn::Linear(convChannels, totalActions));
-        optimizer = std::make_shared<torch::optim::Adam>(parameters(), 1e-6);
+        dense = register_module("dense", torch::nn::Linear(convChannels, TotalActions));
+        optimizer = std::make_shared<torch::optim::Adam>(parameters(), 1e-5);
     }
 
     void TrainBatch(Grid<const SampleType> input, StrifeML::TrainingBatchResult& outResult) override
@@ -80,32 +81,45 @@ struct DeepQNetwork : StrifeML::NeuralNetwork<InitialState, Transition, 1>
         
         auto forward = Forward(initialStates);
     	torch::Tensor currentValues = forward.gather(1, actions);
-    	torch::Tensor nextValues = std::get<0>(targetNetwork->Forward(nextStates).max(1));
+    	torch::Tensor nextValues = std::get<0>(targetNetwork->Forward(nextStates).max(1)).detach();
         torch::Tensor expectedValues = (nextValues * nextStateMask * discount) + rewards;
 
         torch::Tensor loss = torch::nn::functional::smooth_l1_loss(currentValues, expectedValues.unsqueeze(1));
 
     	optimizer->zero_grad();
         loss.backward();
-
-   // 	for(auto param : parameters()) {
-			//param.mutable_grad() = param.grad().data().clamp_(-1, 1);
-   //     }
-    	
+    	torch::nn::utils::clip_grad_norm_(parameters(), 10);
         optimizer->step();
  	
         outResult.loss = loss.item<float>();
     }
 
+	
+    double EPS_START = 0.9;
+	double EPS_END = 0.05;
+	int EPS_DECAY = 200;
+	int steps = 0;
     void MakeDecision(Grid<const InputType> input, OutputType& output) override
     {
-        SetDevice(torch::kCPU);
+    	double random = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
+        double eps_threshold = EPS_END + (EPS_START - EPS_END) * exp(-1. * steps / EPS_DECAY);
+    	steps++;
+    	
+        if (random > eps_threshold)
+        {
+	        SetDevice(torch::kCPU);
+	        eval();
 
-        auto spatialInput = PackIntoTensor(input, [=](auto& sample) { return sample.grid; });
-        torch::Tensor action = Forward(spatialInput);
-        torch::Tensor index = std::get<1>(torch::max(action, 0));
-    	int maxIndex = *index.data_ptr<int64_t>();
-        output.actionIndex = maxIndex;
+	        auto spatialInput = PackIntoTensor(input, [=](auto& sample) { return sample.grid; });
+	        torch::Tensor action = Forward(spatialInput);
+	        torch::Tensor index = std::get<1>(torch::max(action, 0));
+	        int maxIndex = *index.data_ptr<int64_t>();
+	        output.actionIndex = maxIndex;
+        }
+        else
+        {
+	        output.actionIndex = rand() % TotalActions;
+        }
     }
 
     torch::Tensor Forward(const torch::Tensor& spatialInput)
@@ -187,10 +201,9 @@ struct DQNDecider : StrifeML::Decider<DeepQNetwork>
 
 struct DQNTrainer : StrifeML::Trainer<DeepQNetwork>
 {
-    DQNTrainer(Metric* lossMetric, int targetUpdatePeriod)
-        : Trainer<DeepQNetwork>(32, 10000),
-          lossMetric(lossMetric),
-		  targetUpdatePeriod(targetUpdatePeriod)
+    DQNTrainer(Metric* lossMetric)
+        : Trainer<DeepQNetwork>(128, 10000),
+          lossMetric(lossMetric)
     {
     	network->targetNetwork = std::make_shared<DeepQNetwork>();
         network->SetDevice(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
@@ -234,6 +247,7 @@ struct DQNTrainer : StrifeML::Trainer<DeepQNetwork>
     		std::stringstream stream;
     		torch::save(network, stream);
     		torch::load(network->targetNetwork, stream);
+    		network->targetNetwork->eval();
     	}
         lossMetric->Add(result.loss);
     }
@@ -242,5 +256,5 @@ struct DQNTrainer : StrifeML::Trainer<DeepQNetwork>
     StrifeML::GroupedSampleView<SampleType, int>* samplesByActionType;
     Metric* lossMetric;
 	int trainingCount = 0;
-	int targetUpdatePeriod;
+	int targetUpdatePeriod = 1000;
 };

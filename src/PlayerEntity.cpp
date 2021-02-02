@@ -113,8 +113,8 @@ void PlayerEntity::OnAdded()
         	gridSensor->Read(outDecision.grid); // todo brendan I think we are reading the sensor input twice in a row essentially
 
         	outDecision.reward = currentReward;
-        	outDecision.isFinalState = IsApproximately(currentReward, 1);
-        	currentReward = -0.001f;
+        	outDecision.isFinalState = IsApproximately(currentReward, 0);
+        	currentReward = -0.1f;
         	outDecision.actionIndex = lastDirectionIndex;
 
             if (outDecision.isFinalState)
@@ -136,7 +136,7 @@ void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
 	{
 		if (contact->OtherIs<GoalEntity>())
 		{
-			currentReward = 1.0f;
+			currentReward = 0;
 			//StartTimer(0.05f, [=]
 			//{
 			//	std::cout << "Jumping" << std::endl;
@@ -150,10 +150,10 @@ void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
 	    switch (reward->rewardType)
 	    {
 	    case RewardType::ScoreGoal:
-		    currentReward = 1.0f;
+		    currentReward = 0;
 		    break;
 	    case RewardType::None:
-		    currentReward -= 0.001f;
+		    currentReward -= 0.1f;
 	    }
     }
 }
