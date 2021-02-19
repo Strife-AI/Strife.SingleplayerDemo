@@ -45,6 +45,13 @@ DEFINE_EVENT(RewardEvent)
     RewardType rewardType;
 };
 
+DEFINE_EVENT(TimerEvent)
+{
+    TimerEvent()
+    {
+    }
+};
+
 DEFINE_ENTITY(PlayerEntity, "player")
 {
     using NeuralNetwork = NeuralNetworkComponent<DeepQNetwork>;
@@ -69,7 +76,8 @@ DEFINE_ENTITY(PlayerEntity, "player")
     int playerId;
     MoveDirection lastDirection = MoveDirection::None;
 	int lastDirectionIndex = 0; // todo brendan redundant hack with lastDirection
-	float currentReward = -0.001f;
+	float currentReward = 0.0f;
+	EntityReference<Entity> goal;
 
     void Die(const OutOfHealthEvent* outOfHealth);
 };

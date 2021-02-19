@@ -18,11 +18,13 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
 {
 	if (ev.Is<SceneLoadedEvent>())
 	{
-		scene->CreateEntity<GoalEntity>(Vector2(320, 200));
+		auto goal = scene->CreateEntity<GoalEntity>(Vector2(320, 200));
 		
 		auto player = scene->CreateEntity<PlayerEntity>(Vector2(320, 320));
 		player->playerId = 0;
 		scene->GetCameraFollower()->FollowEntity(player);
+		player->SendEvent(TimerEvent());
+		player->goal = goal;
 
 		//auto position = Vector2(400, 400);
   //      auto puck = scene->CreateEntity<PuckEntity>(position);

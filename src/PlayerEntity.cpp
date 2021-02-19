@@ -93,7 +93,10 @@ void PlayerEntity::OnAdded()
         //  * Adding a training sample
         nn->collectInput = [=](InitialState& input)
         {
-            gridSensor->Read(input.grid);
+            //gridSensor->Read(input.grid);
+        	Entity* target;
+        	goal.TryGetValue(target);
+        	input.target = target->Center() - Center();
         };
 
         // Called when the decider makes a decision
@@ -110,23 +113,36 @@ void PlayerEntity::OnAdded()
         // Collects what decision/state the player made
         nn->collectDecision = [=](Transition& outDecision)
         {
-        	gridSensor->Read(outDecision.grid); // todo brendan I think we are reading the sensor input twice in a row essentially
+        	//gridSensor->Read(outDecision.grid); // todo brendan I think we are reading the sensor input twice in a row essentially
 
-        	outDecision.reward = currentReward;
-        	outDecision.isFinalState = IsApproximately(currentReward, 0);
-        	currentReward = -0.1f;
+        	Entity* target;
+        	goal.TryGetValue(target);
+        	outDecision.target = target->Center() - Center();
+        	
+			auto distance = (Center() - target->Center()).Length();
+        	       	
+        	
+        	outDecision.reward = -distance / 1000.0f;
+        	//std::cout << outDecision.reward << std::endl;
+        	outDecision.isFinalState = IsApproximately(currentReward, 1);
+        	currentReward = 0.0f;
         	outDecision.actionIndex = lastDirectionIndex;
-
-            if (outDecision.isFinalState)
-            {
-	            SetCenter(Rand(Vector2(150), Vector2(600)));
-            }
         };
     }
 }
 
 void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
 {
+ //   if (ev.Is<TimerEvent>())
+	//{
+ //       StartTimer(10.0f, [=]
+	//	{
+	//		std::cout << "Jumping" << std::endl;
+	//		SetCenter(Rand(Vector2(150), Vector2(600)));
+ //       	this->SendEvent(TimerEvent());
+	//	});
+	//}
+	
     if (auto outOfHealth = ev.Is<OutOfHealthEvent>())
     {
         Die(outOfHealth);
@@ -136,12 +152,12 @@ void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
 	{
 		if (contact->OtherIs<GoalEntity>())
 		{
-			currentReward = 0;
-			//StartTimer(0.05f, [=]
-			//{
-			//	std::cout << "Jumping" << std::endl;
-			//	SetCenter(Rand(Vector2(150), Vector2(600)));
-			//});
+			currentReward = 1;
+			StartTimer(0.05f, [=]
+			{
+				std::cout << "Jumping" << std::endl;
+				SetCenter(Rand(Vector2(150), Vector2(600)));
+			});
 		}
 	}
 
@@ -150,10 +166,10 @@ void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)
 	    switch (reward->rewardType)
 	    {
 	    case RewardType::ScoreGoal:
-		    currentReward = 0;
+		    currentReward = 1;
 		    break;
 	    case RewardType::None:
-		    currentReward -= 0.1f;
+		    currentReward = 0.0f;
 	    }
     }
 }
