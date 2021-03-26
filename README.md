@@ -1,4 +1,7 @@
 # Strife.SingleplayerDemo
+
+![MadeWithStrifeEngine_BG](https://user-images.githubusercontent.com/7697514/112562676-35b7dc80-8dae-11eb-839f-78d6cf3826d9.png)
+
 Sample single-player game built using the [Strife Engine](https://github.com/Strife-AI/Strife.Engine)
 feel free to use this as a template if you're interested in using the Strife.Engine for your game /
 machine-learning project.
