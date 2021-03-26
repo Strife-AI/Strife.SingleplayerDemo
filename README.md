@@ -4,7 +4,7 @@
 
 Sample single-player game built using the [Strife Engine](https://github.com/Strife-AI/Strife.Engine)
 feel free to use this as a template if you're interested in using the Strife.Engine for your game /
-machine-learning project.
+machine-learning project. This starter project is provided under a [modified UIUC/NCSA license](https://github.com/Strife-AI/Strife.Engine/blob/master/LICENSE.txt).
 
 [Join us on Discord!](https://discord.gg/rNrKTKY)
 
