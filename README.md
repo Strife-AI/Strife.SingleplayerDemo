@@ -6,7 +6,7 @@ Sample single-player game built using the [Strife Engine](https://github.com/Str
 feel free to use this as a template if you're interested in using the Strife.Engine for your game /
 machine-learning project.
 
-[Join us on Discord!]()
+[Join us on Discord!](https://discord.gg/rNrKTKY)
 
 ## Setup
 These instructions are written in mind to be used with the CLion IDE. The underlying build system is
