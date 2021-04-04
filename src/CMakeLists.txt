@@ -31,3 +31,8 @@ if (MSVC)
 						${TORCH_DLLS}
 						$<TARGET_FILE_DIR:SingleplayerDemo>)
 endif()
+
+add_custom_command(TARGET SingleplayerDemo
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ../../assets
+		$<TARGET_FILE_DIR:SingleplayerDemo>/assets)

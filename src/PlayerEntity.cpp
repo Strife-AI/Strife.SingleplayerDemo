@@ -1,5 +1,6 @@
 #include <Memory/Util.hpp>
 #include <Components/LightComponent.hpp>
+#include "ML/ML.hpp"
 #include "PlayerEntity.hpp"
 #include "InputService.hpp"
 #include "Components/RigidBodyComponent.hpp"
@@ -64,10 +65,9 @@ void PlayerEntity::OnAdded()
     light->intensity = 0.6;
 
     health = AddComponent<HealthBarComponent>();
-    health->offsetFromCenter = Vector2(0, -20);
 
     rigidBody = AddComponent<RigidBodyComponent>(b2_dynamicBody);
-    pathFollower = AddComponent<PathFollowerComponent>(rigidBody);
+    //pathFollower = AddComponent<PathFollowerComponent>(rigidBody);
 
     SetDimensions({ 30, 30 });
     auto box = rigidBody->CreateBoxCollider(Dimensions());
@@ -77,7 +77,7 @@ void PlayerEntity::OnAdded()
 
     scene->GetService<InputService>()->players.push_back(this);
 
-// Setup network and sensors
+    // Setup network and sensors
     {
         auto nn = AddComponent<NeuralNetworkComponent<PlayerNetwork>>();
         nn->SetNetwork("nn");

@@ -21,11 +21,12 @@ struct Game : IGame
             .SetWindowCaption("Strife Singleplayer Demo")
             .SetGameName("Strife Singleplayer Demo")
             .ExecuteUserConfig("user.cfg")
-            .SetProjectFile("../assets/SingleplayerDemo.sfProj")
+            .SetProjectFile("assets/SingleplayerDemo.sfProj")
             .EnableDevConsole("console-font");
 
         auto resourceManager = ResourceManager::GetInstance();
-        resourceManager->SetBaseAssetPath("../assets");
+        resourceManager->SetBaseAssetPath("assets");
+        resourceManager->LoadResourceFromFile("Sprite.shader", "sprite-shader");
         resourceManager->LoadResourceFromFile("Sprites/Spritesheets/font.sfnt", "console-font", ".sfnt");
     }
 
@@ -36,7 +37,7 @@ struct Game : IGame
 
     void BuildScene(Scene* scene) override
     {
-        if (scene->MapSegmentName() != "empty-map"_sid)
+        if (scene->SceneName() != "empty-map"_sid)
         {
             scene->AddService<InputService>();
             scene->AddService<NetworkPhysics>(scene->isServer);

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../Strife.ML/NewStuff.hpp"
 #include "Math/Vector2.hpp"
 #include "ML/ML.hpp"
-#include "../../Strife.ML/TensorPacking.hpp"
+#include "TensorPacking.hpp"
 #include <torch/torch.h>
+#include "ML/GridSensor.hpp"
 
 #include "Tools/MetricsManager.hpp"
 
@@ -13,7 +13,7 @@ struct Observation : StrifeML::ISerializable
     void Serialize(StrifeML::ObjectSerializer& serializer) override
     {
         serializer
-            .Add(grid);
+            .Add(grid, "grid");
     }
 
     GridSensorOutput<40, 40> grid;
@@ -24,7 +24,7 @@ struct TrainingLabel : StrifeML::ISerializable
     void Serialize(StrifeML::ObjectSerializer& serializer) override
     {
         serializer
-            .Add(actionIndex);
+            .Add(actionIndex, "action");
     }
 
     int actionIndex;
@@ -40,13 +40,13 @@ struct PlayerNetwork : StrifeML::NeuralNetwork<Observation, TrainingLabel, 1>
     //PlayerNetwork(int totalObjects, int totalActions)
     PlayerNetwork()
     {
-        embedding = register_module("embedding", torch::nn::Embedding(3, 4));
-        conv1 = register_module("conv1", torch::nn::Conv2d(4, 8, 5));
-        conv2 = register_module("conv2", torch::nn::Conv2d(8, 16, 3));
-        conv3 = register_module("conv3", torch::nn::Conv2d(16, 32, 3));
-        conv4 = register_module("conv4", torch::nn::Conv2d(32, 64, 3));
-        dense = register_module("dense", torch::nn::Linear(64, 9));
-        optimizer = std::make_shared<torch::optim::Adam>(parameters(), 1e-3);
+        embedding = module->register_module("embedding", torch::nn::Embedding(3, 4));
+        conv1 = module->register_module("conv1", torch::nn::Conv2d(4, 8, 5));
+        conv2 = module->register_module("conv2", torch::nn::Conv2d(8, 16, 3));
+        conv3 = module->register_module("conv3", torch::nn::Conv2d(16, 32, 3));
+        conv4 = module->register_module("conv4", torch::nn::Conv2d(32, 64, 3));
+        dense = module->register_module("dense", torch::nn::Linear(64, 9));
+        optimizer = std::make_shared<torch::optim::Adam>(module->parameters(), 1e-3);
     }
 
     void TrainBatch(Grid<const SampleType> input, StrifeML::TrainingBatchResult& outResult) override
@@ -113,19 +113,19 @@ struct PlayerNetwork : StrifeML::NeuralNetwork<Observation, TrainingLabel, 1>
 
 
         x = leaky_relu(conv1->forward(x)); // N x 8 x 76 x 76
-        x = dropout(x, 0.5, is_training());
+        x = dropout(x, 0.5, module->is_training());
         x = max_pool2d(x, { 2, 2 }); // N x 8 x 38 x 38
 
         x = leaky_relu(conv2->forward(x)); // N x 16 x 36 x 36
-        x = dropout(x, 0.5, is_training());
+        x = dropout(x, 0.5, module->is_training());
         x = max_pool2d(x, { 2, 2 }); // N x 16 x 18 x 18
 
         x = leaky_relu(conv3->forward(x)); // N x 32 x 16 x 16
-        x = dropout(x, 0.5, is_training());
+        x = dropout(x, 0.5, module->is_training());
         x = max_pool2d(x, { 2, 2 }); // N x 32 x 8 x 8
 
         x = leaky_relu(conv4->forward(x)); // N x 64 x 6 x 6
-        x = dropout(x, 0.5, is_training());
+        x = dropout(x, 0.5, module->is_training());
 
         if (sequenceLength > 1)
         {
