@@ -3,7 +3,6 @@
 #include "Engine.hpp"
 #include "InputService.hpp"
 #include "PlayerEntity.hpp"
-#include "Net/NetworkPhysics.hpp"
 #include "Scene/IGame.hpp"
 #include "Scene/Scene.hpp"
 #include "Scene/TilemapEntity.hpp"
@@ -23,9 +22,10 @@ struct Game : IGame
             .ExecuteUserConfig("user.cfg")
             .SetProjectFile("assets/SingleplayerDemo.sfProj")
             .EnableDevConsole("console-font");
+    }
 
-        auto resourceManager = ResourceManager::GetInstance();
-        resourceManager->SetBaseAssetPath("assets");
+    void LoadResources(ResourceManager* resourceManager)
+    {
         resourceManager->LoadResourceFromFile("Sprite.shader", "sprite-shader");
         resourceManager->LoadResourceFromFile("Sprites/Spritesheets/font.sfnt", "console-font", ".sfnt");
     }
@@ -40,7 +40,6 @@ struct Game : IGame
         if (scene->SceneName() != "empty-map"_sid)
         {
             scene->AddService<InputService>();
-            scene->AddService<NetworkPhysics>(scene->isServer);
         }
     }
 

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
+find_package(Torch)
+
 add_executable(SingleplayerDemo
 	main.cpp
 	"PlayerEntity.hpp"
@@ -15,11 +17,9 @@ add_executable(SingleplayerDemo
 	FireballEntity.cpp
 	FireballEntity.hpp)
 
-find_package(torch REQUIRED)
-
 set_property(TARGET SingleplayerDemo PROPERTY CXX_STANDARD 17)
 
-target_link_libraries(SingleplayerDemo Strife.Engine Strife.ML torch)
+target_link_libraries(SingleplayerDemo Strife.Engine Strife.ML)
 
 # Copy torch dlls
 if (MSVC)
