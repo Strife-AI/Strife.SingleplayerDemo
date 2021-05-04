@@ -31,7 +31,8 @@ Prerequisite: In the Visual Studio installer, check "Desktop Development with C+
     1. Under x64-Debug, click `Show advanced settings`
     1. Then under Cmake generator dropdown, select `Visual Studio 16 2019 Win64`
     1. Repeat the above steps for x64-RelWithDebInfo
-1.  Project → `Generate Cache`.
+1.  Run cmake
+    1. Project → `Generate Cache`.
     1. The cmake build will download all the dependencies including PyTorch, so this could take upwards of 20 minutes.  Vcpkg will cache most of its work so future builds will be much faster.
 
 ### Non-Visual Studio - Generating Makefiles
