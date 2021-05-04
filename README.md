@@ -16,6 +16,7 @@ git clone --recurse-submodules -j8 git@github.com:Strife-AI/Strife.SingleplayerD
 
 Run git lfs and fetch assets
 ```shell
+cd Strife.SingleplayerDemo
 git lfs install && git lfs fetch --all
 ``` 
 
