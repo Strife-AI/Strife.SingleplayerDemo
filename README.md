@@ -8,10 +8,6 @@ machine-learning project. This starter project is provided under a [modified UIU
 
 [Join us on Discord!](https://discord.gg/rNrKTKY)
 
-## Setup
-These instructions are written in mind to be used with the CLion IDE. The underlying build system is
-CMake so any build environment will suffice.
-
 ### Getting Started
 Clone the repo (replace the repo url below with your own if you're mirroring the repo):
 ```shell
@@ -23,7 +19,18 @@ Run git lfs and fetch assets
 git lfs install && git lfs fetch --all
 ``` 
 
-### Generating Makefiles
+### Visual Studio Instructions (Windows)
+Prerequisite: In the Visual Studio installer, check "Desktop Development with C++".
+1. Open Visual Studio
+1. Open the project with File -> Open Folder -> `Strife.SinglePlayerDemo`
+1. CMake should automatically start running -> you need to cancel this because the default will use the ninja cmake generator.
+1. Click the dropdown by x64-Debug and open `Manage Configurations...`
+  1. Under x64-Debug, click `Show advanced settings`
+  1. Then under Cmake generator dropdown, select `Visual Studio 16 2019 Win64`
+  1. Repeat the above steps for x64-RelWithDebInfo
+1. Next, go to Project and click `Generate Cache`. The cmake build will download all the dependencies including PyTorch, so this could take upwards of 20 minutes.  Vcpkg will cache most of its work so future builds will be much faster.
+
+### Non-Visual Studio - Generating Makefiles
 Our team uses CLion, we can guarantee that the engine and the demo game build successfully with it.
 That being said, CMake is used as the buildsystem, so any IDE with CMake support should suffice.
 
