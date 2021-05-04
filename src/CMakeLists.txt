@@ -9,8 +9,6 @@ add_executable(SingleplayerDemo
 	"InputService.hpp"
 	"InputService.cpp"
 	"CastleEntity.cpp"
- 	"PuckEntity.hpp"
-	"PuckEntity.cpp"
 	"GameML.hpp"
         HealthBarComponent.cpp
 	HealthBarComponent.hpp

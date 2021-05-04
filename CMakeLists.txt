@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
+set(VCPKG_MANIFEST_MODE ON)
+
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake
+		CACHE STRING "Vcpkg toolchain file")
+
 project(SingleplayerDemo VERSION 1 LANGUAGES C CXX)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")

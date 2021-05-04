@@ -65,6 +65,7 @@ void PlayerEntity::OnAdded()
     light->intensity = 0.6;
 
     health = AddComponent<HealthBarComponent>();
+    health->offsetFromCenter = Vector2(0, -20);
 
     rigidBody = AddComponent<RigidBodyComponent>(b2_dynamicBody);
     //pathFollower = AddComponent<PathFollowerComponent>(rigidBody);

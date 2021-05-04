@@ -1,14 +1,5 @@
-
 #include "InputService.hpp"
-
-#include <slikenet/BitStream.h>
-#include <slikenet/peerinterface.h>
-
-#include "Engine.hpp"
-#include "PuckEntity.hpp"
 #include "Components/RigidBodyComponent.hpp"
-#include "Memory/Util.hpp"
-#include "Net/ReplicationManager.hpp"
 #include "Physics/PathFinding.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Tools/Console.hpp"
@@ -113,7 +104,7 @@ void InputService::Render(Renderer* renderer)
     PlayerEntity* currentPlayer;
     if (activePlayer.TryGetValue(currentPlayer))
     {
-        renderer->RenderRectangleOutline(currentPlayer->Bounds(), Color::White(), -1);
+        renderer->RenderRectangleOutline(Rectangle(currentPlayer->ScreenCenter() - Vector2(16), Vector2(32)), Color::White(), -1);
     }
 }
 
