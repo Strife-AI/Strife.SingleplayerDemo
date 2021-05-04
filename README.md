@@ -12,12 +12,6 @@ machine-learning project. This starter project is provided under a [modified UIU
 These instructions are written in mind to be used with the CLion IDE. The underlying build system is
 CMake so any build environment will suffice.
 
-### Prerequisites
-* [Make sure you have all the prerequisites for the engine](https://github.com/Strife-AI/Strife.Engine#getting-started)
-* Some assets are included with this repository, [git LFS](https://git-lfs.github.com) is required to get
-  the sample environment working.
-* [Install dependencies using vpckg](https://github.com/Strife-AI/Strife.Engine#setting-up-vcpkg)
-
 ### Getting Started
 Clone the repo (replace the repo url below with your own if you're mirroring the repo):
 ```shell
@@ -28,13 +22,6 @@ Run git lfs and fetch assets
 ```shell
 git lfs install && git lfs fetch --all
 ``` 
-
-If you haven't done so already, unzip libtorch and store the unarchived files someplace useful.
-
-* If you're on Windows, set up environment variables ([How to access them in Windows 10](https://www.wikihow.com/Create-an-Environment-Variable-in-Windows-10))
-named `TORCH_DEBUG_DIR` and `TORCH_RELEASE_DIR` which point to the root 
-directory of the debug and release versions of libtorch.
-  * Once these are set, restart Windows to ensure the changes take place.
 
 ### Generating Makefiles
 Our team uses CLion, we can guarantee that the engine and the demo game build successfully with it.
@@ -48,8 +35,7 @@ mkdir build && cd build
 
 Generate makefiles:
 ```shell
-cmake .. -DCMAKE_TOOLCHAIN_FILE={Path/To/Vcpkg}/scripts/buildsystems/vcpkg.cmake
- -DCMAKE_PREFIX_PATH={Path/To/Libtorch}/share/cmake/Torch/
+cmake ..
 ```
 
 * Add a `-G` flag followed by a supported project generator, for example. If generating an Xcode project, do:
@@ -65,13 +51,6 @@ make
 #### Using CLion
 Open the root `CMakeLists.txt` as a project in CLion, then navigate to CLion
 settings (File → Settings or CLion → Preferences on Mac).
-
-Under **Build Execution & Deployment**, select **CMake**. Set the **CMake 
-Options** field to the CMake variables:
-```shell
--DCMAKE_TOOLCHAIN_FILE={Path/To/Vcpkg}/scripts/buildsystems/vcpkg.cmake
--DCMAKE_PREFIX_PATH={Path/To/Libtorch}/share/cmake/Torch/
-```
 
 Once updated, CLion will automatically attempt to generate the CMakeCache files.
 
