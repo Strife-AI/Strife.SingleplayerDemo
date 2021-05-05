@@ -12,6 +12,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
 if(MSVC)
 	add_compile_options("/EHsc")
 	add_compile_options("/MP")
+	add_compile_options("/permissive")
 
 	set(CMAKE_CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -DNOGDI -DWIN32")
 endif()
