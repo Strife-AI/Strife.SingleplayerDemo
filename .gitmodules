@@ -1,6 +1,15 @@
-[submodule "Strife.Engine"]
-	path = Strife.Engine
-	url = git@github.com:Strife-AI/Strife.Engine.git
 [submodule "vcpkg"]
 	path = vcpkg
 	url = git@github.com:microsoft/vcpkg.git
+[submodule "Strife.Engine"]
+	path = Strife.Engine
+	url = git@github.com:Strife-AI/Strife.Engine.git
+	branch = main
+[submodule "Strife.ML"]
+	path = Strife.ML
+	url = git@github.com:Strife-AI/Strife.ML.git
+	branch = main
+[submodule "Strife.Common"]
+	path = Strife.Common
+	url = git@github.com:Strife-AI/Strife.Common.git
+	branch = main

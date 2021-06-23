@@ -17,5 +17,7 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -DNOGDI -DWIN32")
 endif()
 
+add_subdirectory(Strife.ML)
 add_subdirectory(Strife.Engine)
+add_subdirectory(Strife.Common)
 add_subdirectory(src)
