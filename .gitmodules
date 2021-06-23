@@ -8,8 +8,6 @@
 [submodule "Strife.ML"]
 	path = Strife.ML
 	url = git@github.com:Strife-AI/Strife.ML.git
-	branch = main
 [submodule "Strife.Common"]
 	path = Strife.Common
 	url = git@github.com:Strife-AI/Strife.Common.git
-	branch = main
