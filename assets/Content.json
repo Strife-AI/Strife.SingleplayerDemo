@@ -1,0 +1,19 @@
+{
+    "resources": [
+        {
+            "type": "sprite-font",
+            "name": "console-font",
+            "path": "Sprites/Spritesheets/font.sfnt"
+        },
+        {
+            "type": "map",
+            "name": "erebor",
+            "path": "Tilemaps/erebor.tmx"
+        },
+        {
+            "type": "shader",
+            "name": "sprite-shader",
+            "path": "Sprite.shader"
+        }
+    ]
+}
