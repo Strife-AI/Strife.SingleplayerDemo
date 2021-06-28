@@ -3,13 +3,11 @@
 #include "Engine.hpp"
 #include "InputService.hpp"
 #include "PlayerEntity.hpp"
+#include "PlayerNeuralNetworkService.hpp"
 #include "Scene/IGame.hpp"
 #include "Scene/Scene.hpp"
 #include "Scene/TilemapEntity.hpp"
 #include "Tools/Console.hpp"
-
-ConsoleVar<int> g_serverPort("port", 60001);
-extern ConsoleVar<bool> g_isServer;
 
 struct Game : IGame
 {
@@ -20,14 +18,12 @@ struct Game : IGame
             .SetWindowCaption("Strife Singleplayer Demo")
             .SetGameName("Strife Singleplayer Demo")
             .ExecuteUserConfig("user.cfg")
-            .SetProjectFile("assets/SingleplayerDemo.sfProj")
             .EnableDevConsole("console-font");
     }
 
     void LoadResources(ResourceManager* resourceManager)
     {
-        resourceManager->LoadResourceFromFile("Sprite.shader", "sprite-shader");
-        resourceManager->LoadResourceFromFile("Sprites/Spritesheets/font.sfnt", "console-font", ".sfnt");
+        resourceManager->LoadContentFile("Content.json");
     }
 
     void ConfigureEngine(EngineConfig& config) override
@@ -37,17 +33,14 @@ struct Game : IGame
 
     void BuildScene(Scene* scene) override
     {
-        if (scene->SceneName() != "empty-map"_sid)
-        {
-            scene->AddService<InputService>();
-        }
+    	auto neuralNetworkManager = GetEngine()->GetNeuralNetworkManager();
+    	auto inputService = scene->AddService<InputService>();
+        scene->AddService<PlayerNeuralNetworkService>(neuralNetworkManager->GetNetwork<PlayerNetwork>("nn"), inputService);
     }
 
     void OnGameStart() override
     {
-        auto map = "erebor";
         auto engine = GetEngine();
-
         auto neuralNetworkManager = engine->GetNeuralNetworkManager();
 
         // Create networks
@@ -67,7 +60,7 @@ struct Game : IGame
             neuralNetworkManager->SetSensorObjectDefinition(sensorDefinition);
         }
 
-        engine->StartSinglePlayerGame(map);
+        engine->StartSinglePlayerGame("erebor");
     }
 
     std::string initialConsoleCmd;
