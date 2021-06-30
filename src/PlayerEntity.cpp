@@ -4,8 +4,7 @@
 #include "PlayerEntity.hpp"
 #include "InputService.hpp"
 #include "Components/RigidBodyComponent.hpp"
-#include "Net/ReplicationManager.hpp"
-#include "Physics/PathFinding.hpp"
+
 #include "Renderer/Renderer.hpp"
 
 #include "CastleEntity.hpp"
@@ -77,35 +76,7 @@ void PlayerEntity::OnAdded()
     box->SetFriction(0);
 
     scene->GetService<InputService>()->players.push_back(this);
-
-    // Setup network and sensors
-    {
-        auto nn = AddComponent<NeuralNetworkComponent<PlayerNetwork>>();
-        nn->SetNetwork("nn");
-    	nn->mode = NeuralNetworkMode::Deciding;
-
-        auto gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
-
-        // Called when:
-        //  * Collecting input to make a decision
-        //  * Adding a training sample
-        nn->collectInput = [=](Observation& input)
-        {
-            gridSensor->Read(input.grid);
-        };
-
-        // Called when the decider makes a decision
-        nn->receiveDecision = [=](TrainingLabel& decision)
-        {
-            SetMoveDirection(MoveDirectionToVector2(static_cast<MoveDirection>(decision.actionIndex)) * 200);
-        };
-
-        // Collects what decision the player made
-        nn->collectDecision = [=](TrainingLabel& outDecision)
-        {
-            outDecision.actionIndex = static_cast<int>(lastDirection);
-        };
-    }
+    gridSensor = AddComponent<GridSensorComponent<40, 40>>(Vector2(16, 16));
 }
 
 void PlayerEntity::ReceiveEvent(const IEntityEvent& ev)

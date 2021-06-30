@@ -1,0 +1,25 @@
+{
+    "resources": [
+        {
+            "type": "sprite-font",
+            "name": "console-font",
+            "path": "Sprites/Spritesheets/font.sfnt"
+        },
+        {
+            "type": "map",
+            "name": "demo",
+            "path": "Tilemaps/demo.tmx"
+        },
+        {
+            "type": "shader",
+            "name": "sprite-shader",
+            "path": "Sprite.shader"
+        },
+        {
+            "type": "sprite",
+            "name": "castleSprite",
+            "path": "Sprites/castle.png"
+        }
+
+    ]
+}

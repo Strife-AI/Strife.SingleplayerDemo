@@ -673,17 +673,13 @@
 </data>
  </layer>
  <objectgroup id="4" name="Objects">
-  <object id="1" type="castle" x="736" y="736" width="335" height="275">
+  <object id="1" type="castle" x="1344" y="1344" width="335" height="275">
    <properties>
     <property name="prefab" value="castle"/>
    </properties>
   </object>
-  <object id="11" type="castle" x="1904" y="736" width="335" height="275"/>
-  <object id="12" type="castle" x="3088" y="736" width="335" height="275"/>
-  <object id="13" type="castle" x="736" y="1939" width="335" height="275"/>
-  <object id="14" type="castle" x="736" y="3149" width="335" height="275"/>
-  <object id="15" type="castle" x="1943" y="3152" width="335" height="275"/>
-  <object id="16" type="castle" x="3088" y="3148" width="335" height="275"/>
-  <object id="17" type="castle" x="3088" y="1952" width="335" height="275"/>
+  <object id="11" type="castle" x="2464" y="1344" width="335" height="275"/>
+  <object id="12" type="castle" x="1344" y="2528" width="335" height="275"/>
+  <object id="17" type="castle" x="2464" y="2528" width="335" height="275"/>
  </objectgroup>
 </map>

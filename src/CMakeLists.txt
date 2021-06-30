@@ -3,17 +3,19 @@ cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 find_package(Torch)
 
 add_executable(SingleplayerDemo
-	main.cpp
+	"main.cpp"
 	"PlayerEntity.hpp"
 	"PlayerEntity.cpp"
 	"InputService.hpp"
 	"InputService.cpp"
 	"CastleEntity.cpp"
 	"GameML.hpp"
-        HealthBarComponent.cpp
-	HealthBarComponent.hpp
-	FireballEntity.cpp
-	FireballEntity.hpp)
+    "HealthBarComponent.cpp"
+	"HealthBarComponent.hpp"
+	"FireballEntity.cpp"
+	"FireballEntity.hpp"
+	"PlayerNeuralNetworkService.hpp"
+	"PlayerNeuralNetworkService.cpp")
 
 set_property(TARGET SingleplayerDemo PROPERTY CXX_STANDARD 17)
 

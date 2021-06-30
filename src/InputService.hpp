@@ -5,6 +5,7 @@
 #include "Scene/Scene.hpp"
 
 struct CastleEntity;
+class PlayerNeuralNetworkService;
 
 struct InputService : ISceneService
 {
@@ -18,6 +19,7 @@ struct InputService : ISceneService
     EntityReference<PlayerEntity> activePlayer;
     std::vector<PlayerEntity*> players;
     std::vector<CastleEntity*> spawns;
+	PlayerNeuralNetworkService* nnService;
 
     bool gameOver = false;
 };

@@ -1,6 +1,5 @@
 #include "InputService.hpp"
 #include "Components/RigidBodyComponent.hpp"
-#include "Physics/PathFinding.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Tools/Console.hpp"
 
@@ -18,9 +17,10 @@ void InputService::ReceiveEvent(const IEntityEvent& ev)
     {
         auto spawnPoints = scene->GetEntitiesOfType<CastleEntity>();
 
-        for (int i = 0; i < spawnPoints.size(); ++i)
+    	int playerId = 0;
+        for (auto i = spawnPoints.begin(); i != spawnPoints.end(); ++i)
         {
-            SpawnPlayer(spawnPoints[i], i);
+            SpawnPlayer(*i, playerId++);
         }
     }
     if (ev.Is<UpdateEvent>())
@@ -59,11 +59,11 @@ void InputService::HandleInput()
                     PlayerEntity* oldPlayer;
                     if (activePlayer.TryGetValue(oldPlayer))
                     {
-                        oldPlayer->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::Deciding;
+                        //oldPlayer->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::Deciding;
                     }
 
                     activePlayer = player;
-                    player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::CollectingSamples;
+                    //player->GetComponent<PlayerEntity::NeuralNetwork>()->mode = NeuralNetworkMode::CollectingSamples;
 
                     scene->GetCameraFollower()->FollowEntity(player);
 
