@@ -8,12 +8,18 @@
         {
             "type": "map",
             "name": "erebor",
-            "path": "Tilemaps/erebor.tmx"
+            "path": "Tilemaps/Erebor.tmx"
         },
         {
             "type": "shader",
             "name": "sprite-shader",
             "path": "Sprite.shader"
+        },
+        {
+            "type": "sprite",
+            "name": "castleSprite",
+            "path": "Sprites/castle.png"
         }
+
     ]
 }

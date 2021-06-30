@@ -4,7 +4,7 @@
 #include "InputService.hpp"
 
 PlayerNeuralNetworkService::PlayerNeuralNetworkService(StrifeML::NetworkContext<PlayerNetwork>* context, InputService* inputService)
-	: NeuralNetworkService<PlayerEntity, PlayerNetwork>(context, 16),
+	: NeuralNetworkService<PlayerEntity, PlayerNetwork>(context, 128),
 	inputService(inputService)
 {
 }

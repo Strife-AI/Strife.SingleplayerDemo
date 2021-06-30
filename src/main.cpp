@@ -48,7 +48,8 @@ struct Game : IGame
             auto playerDecider = neuralNetworkManager->CreateDecider<PlayerDecider>();
             auto playerTrainer = neuralNetworkManager->CreateTrainer<PlayerTrainer>(engine->GetMetricsManager()->GetOrCreateMetric("loss"));
 
-            neuralNetworkManager->CreateNetwork("nn", playerDecider, playerTrainer);
+        	int sequenceLength = 1;
+            neuralNetworkManager->CreateNetwork("nn", playerDecider, playerTrainer, sequenceLength);
         }
 
         // Add types of objects the sensors can pick up
