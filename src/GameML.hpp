@@ -84,12 +84,11 @@ struct PlayerNetwork : StrifeML::NeuralNetwork<Observation, TrainingLabel>
     {
         auto spatialInput = PackIntoTensor(input, [=](auto& sample) { return sample.grid; });
         torch::Tensor action = Forward(spatialInput).squeeze();
-        torch::Tensor index = std::get<1>(torch::max(action, 0));
-        int maxIndex = *index.data_ptr<int64_t>();
 
-    	for (auto& decision : output)
+    	for (int i = 0; i < output.size(); ++i)
         {
-	        decision.actionIndex = maxIndex;
+    		torch::Tensor index = std::get<1>(torch::max(action.index({i}), 0));
+	        output[i].actionIndex = *index.data_ptr<int64_t>();
         }
     }
 

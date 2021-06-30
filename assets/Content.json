@@ -7,8 +7,8 @@
         },
         {
             "type": "map",
-            "name": "erebor",
-            "path": "Tilemaps/Erebor.tmx"
+            "name": "demo",
+            "path": "Tilemaps/demo.tmx"
         },
         {
             "type": "shader",
