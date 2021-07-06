@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="106" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="63" nextobjectid="1">
- <tileset firstgid="1" source="Atlas_Terrain.tsx"/>
- <tileset firstgid="1025" source="SpecialTiles.tsx"/>
+<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="106" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="63" nextobjectid="1">
+ <tileset firstgid="1" source="Atlas_Terrain.xml"/>
+ <tileset firstgid="1025" source="SpecialTiles.xml"/>
  <layer id="24" name="Ground" width="106" height="32">
   <data encoding="csv">
 872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,872,

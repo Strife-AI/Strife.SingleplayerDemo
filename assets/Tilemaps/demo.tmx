@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="130" height="130" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="19">
- <tileset firstgid="1" source="Tilesets/SpecialTiles.tsx"/>
- <tileset firstgid="5" source="Tilesets/Atlas/Atlas_Terrain.tsx"/>
+ <tileset firstgid="1" source="SpecialTiles.xml"/>
+ <tileset firstgid="5" source="Atlas_Terrain.xml"/>
  <layer id="1" name="Ground" width="130" height="130">
   <data encoding="csv">
 120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,
