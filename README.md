@@ -17,6 +17,8 @@ git clone --recurse-submodules -j8 git@github.com:Strife-AI/Strife.SingleplayerD
 Run git lfs and fetch assets
 ```shell
 cd Strife.SingleplayerDemo
+```
+```shell
 git lfs install && git lfs fetch --all
 ``` 
 
@@ -24,14 +26,7 @@ git lfs install && git lfs fetch --all
 Prerequisite: In the Visual Studio installer, check "Desktop Development with C++".
 1. Open Visual Studio
 1. Open the project with File → Open Folder → `Strife.SinglePlayerDemo`
-1. CMake will automatically start running but needs to be cancelled because the default will use the ninja cmake generator.
-    1. Project → `Cancel CMake Cache Generation`
-1. Configure cmake
-    1. Click the dropdown by x64-Debug and open `Manage Configurations...`
-    1. Under x64-Debug, click `Show advanced settings`
-    1. Then under Cmake generator dropdown, select `Visual Studio 16 2019 Win64`
-    1. Repeat the above steps for x64-RelWithDebInfo
-1.  Run cmake
+1. CMake should run automatically. Alternately, you can run CMake manually.
     1. Project → `Generate Cache`.
     1. The cmake build will download all the dependencies including PyTorch, so this could take upwards of 20 minutes.  Vcpkg will cache most of its work so future builds will be much faster.
 
